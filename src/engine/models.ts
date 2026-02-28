@@ -14,12 +14,16 @@ export function generateId(): string {
 }
 
 // 创建基础连接点
-export function createConnectionPoint(x: number, y: number): ConnectionPoint {
-  return {
+export function createConnectionPoint(x: number, y: number, label?: string): ConnectionPoint {
+  const point: ConnectionPoint = {
     id: generateId(),
     x,
     y,
   }
+  if (label !== undefined) {
+    point.label = label
+  }
+  return point
 }
 
 // 创建默认元件状态
@@ -28,6 +32,7 @@ export function createDefaultComponentState(): ComponentState {
     isOn: true,
     tripped: false,
     blown: false,
+    isOn2: true,
   }
 }
 
@@ -57,47 +62,62 @@ export function createComponent(
 export function createDefaultConnections(type: ComponentType): ConnectionPoint[] {
   switch (type) {
     case 'power':
-      // 电源：左(负)右(正)
+      // 电源：左N右L
       return [
-        createConnectionPoint(0, 20),
-        createConnectionPoint(60, 20),
+        createConnectionPoint(0, 20, 'N'),
+        createConnectionPoint(60, 20, 'L'),
       ]
     case 'switch':
-      // 开关：左入右出
+      // 开关：串在火线上，两端都是L
       return [
-        createConnectionPoint(0, 15),
-        createConnectionPoint(50, 15),
+        createConnectionPoint(0, 15, 'L'),
+        createConnectionPoint(50, 15, 'L'),
       ]
     case 'light':
     case 'outlet':
     case 'resistor':
-      // 负载：左入右出
+      // 负载：左L右N
       return [
-        createConnectionPoint(0, 20),
-        createConnectionPoint(50, 20),
+        createConnectionPoint(0, 20, 'L'),
+        createConnectionPoint(50, 20, 'N'),
       ]
     case 'circuit_breaker':
     case 'fuse':
-      // 保护器件：左入右出
+      // 保护器件：串在火线上，两端都是L
       return [
-        createConnectionPoint(0, 15),
-        createConnectionPoint(50, 15),
+        createConnectionPoint(0, 15, 'L'),
+        createConnectionPoint(50, 15, 'L'),
       ]
     case 'wire':
-      // 导线：两点
+      // 导线：两点，无label
       return [
         createConnectionPoint(0, 10),
         createConnectionPoint(50, 10),
+      ]
+    case 'outlet_5hole':
+      // 五孔插座：L, N, E（地线）
+      return [
+        createConnectionPoint(0, 20, 'L'),
+        createConnectionPoint(50, 20, 'N'),
+        createConnectionPoint(25, 0, 'E'),
+      ]
+    case 'dual_switch':
+      // 双联开关：4个连接点，两组L1/L2
+      return [
+        createConnectionPoint(0, 10, 'L1'),
+        createConnectionPoint(60, 10, 'L1'),
+        createConnectionPoint(0, 30, 'L2'),
+        createConnectionPoint(60, 30, 'L2'),
       ]
     case 'refrigerator':
     case 'air_conditioner':
     case 'tv':
     case 'washer':
     case 'water_heater':
-      // 家电：输入端（左侧中部）+ 输出端（右侧中部）
+      // 家电：左L右N
       return [
-        createConnectionPoint(0, 25),   // 输入端
-        createConnectionPoint(60, 25),  // 输出端
+        createConnectionPoint(0, 25, 'L'),
+        createConnectionPoint(60, 25, 'N'),
       ]
     default:
       return [
@@ -225,18 +245,21 @@ export function updateComponentState(
 // 切换开关状态
 export function toggleSwitch(
   diagram: CircuitDiagram,
-  componentId: string
+  componentId: string,
+  groupIndex: 1 | 2 = 1
 ): CircuitDiagram {
   const component = diagram.components.find(c => c.id === componentId)
-  if (!component || component.type !== 'switch') {
+  if (!component || (component.type !== 'switch' && component.type !== 'dual_switch')) {
     return diagram
   }
+  
+  const stateKey = groupIndex === 2 ? 'isOn2' : 'isOn'
   
   return {
     ...diagram,
     components: diagram.components.map(c =>
       c.id === componentId
-        ? { ...c, state: { ...c.state, isOn: !c.state.isOn } }
+        ? { ...c, state: { ...c.state, [stateKey]: !c.state[stateKey] } }
         : c
     ),
     updatedAt: new Date().toISOString(),
