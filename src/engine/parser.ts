@@ -2,9 +2,8 @@ import type {
   Component, 
   CircuitDiagram, 
   ComponentType,
-  ConnectionPoint 
 } from '../types'
-import { generateId, createConnectionPoint, createDefaultConnections } from './models'
+import { generateId, createDefaultConnections } from './models'
 
 // SVG 元素类型
 interface SVGElement {
