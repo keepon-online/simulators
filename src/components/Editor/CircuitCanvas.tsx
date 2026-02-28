@@ -82,8 +82,8 @@ function renderComponent(component: Component, isSelected: boolean, values?: { c
           <circle cx={x + 15} cy={y + 15} r={4} fill="white" />
           <circle cx={x + 35}cy={y + 15} r={4} fill="white" />
           <text x={x + 25} y={y + 45} textAnchor="middle" fill="#6b7280" fontSize={8}>{name}</text>
-          <circle cx={x} cy={y + 15} r={4} fill="#6b7280" />
-          <circle cx={x + 50} cy={y + 15} r={4} fill="#6b7280" />
+          <circle cx={x} cy={y + 20} r={4} fill="#6b7280" />
+          <circle cx={x + 50} cy={y + 20} r={4} fill="#6b7280" />
         </g>
       )
       
@@ -107,8 +107,8 @@ function renderComponent(component: Component, isSelected: boolean, values?: { c
           <rect x={x} y={y} width={50} height={20} fill={isBlown ? '#dc2626' : color} rx={4} stroke={selectionStroke} strokeWidth={selectionStrokeWidth} />
           <line x1={x + 15} y1={y + 10} x2={x + 35} y2={y + 10} stroke="white" strokeWidth={2} />
           <text x={x + 25} y={y + 35} textAnchor="middle" fill="#6b7280" fontSize={8}>{name}</text>
-          <circle cx={x} cy={y + 10} r={4} fill="#6b7280" />
-          <circle cx={x + 50} cy={y + 10} r={4} fill="#6b7280" />
+          <circle cx={x} cy={y + 15} r={4} fill="#6b7280" />
+          <circle cx={x + 50} cy={y + 15} r={4} fill="#6b7280" />
         </g>
       )
       
@@ -129,7 +129,8 @@ function renderComponent(component: Component, isSelected: boolean, values?: { c
           <rect x={x} y={y} width={60} height={50} fill={color} rx={4} stroke={selectionStroke} strokeWidth={selectionStrokeWidth} />
           <text x={x + 30} y={y + 30} textAnchor="middle" fontSize={20}>{iconMap[type]}</text>
           <text x={x + 30} y={y + 65} textAnchor="middle" fill="#6b7280" fontSize={8}>{name}</text>
-          <circle cx={x + 30} cy={y + 50} r={4} fill="#6b7280" />
+          <circle cx={x} cy={y + 25} r={4} fill="#6b7280" />
+          <circle cx={x + 60} cy={y + 25} r={4} fill="#6b7280" />
         </g>
       )
       
@@ -154,8 +155,8 @@ function renderWire(
   
   if (!fromComponent || !toComponent) return null
   
-  const fromPoint = fromComponent.connections[0]
-  const toPoint = toComponent.connections[0]
+  const fromPoint = fromComponent.connections.find(c => c.id === wire.from.pointId) || fromComponent.connections[0]
+  const toPoint = toComponent.connections.find(c => c.id === wire.to.pointId) || toComponent.connections[0]
   
   if (!fromPoint || !toPoint) return null
   
