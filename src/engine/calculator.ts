@@ -71,6 +71,8 @@ export function getComponentResistance(component: Component): number {
       return 0
     case 'switch':
       return state.isOn ? 0.01 : Infinity
+    case 'dual_switch':
+      return state.isOn ? 0.01 : Infinity
     case 'circuit_breaker':
       return 0.01
     case 'fuse':
@@ -80,6 +82,8 @@ export function getComponentResistance(component: Component): number {
     case 'light':
       return params.power ? (HOUSEHOLD_VOLTAGE * HOUSEHOLD_VOLTAGE) / params.power : 806.67
     case 'outlet':
+      return Infinity
+    case 'outlet_5hole':
       return Infinity
     case 'resistor':
       return params.resistance || 100
@@ -104,6 +108,8 @@ export function isComponentConducting(component: Component): boolean {
   
   switch (type) {
     case 'switch':
+      return state.isOn
+    case 'dual_switch':
       return state.isOn
     case 'circuit_breaker':
       return !state.tripped
