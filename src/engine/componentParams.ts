@@ -37,6 +37,12 @@ export const BASIC_COMPONENT_PARAMS: Record<string, ComponentParams> = {
     voltage: HOUSEHOLD_VOLTAGE,
     resistance: 100, // 默认电阻值
   },
+  outlet_5hole: {
+    voltage: HOUSEHOLD_VOLTAGE,
+  },
+  dual_switch: {
+    resistance: 0.01,
+  },
 }
 
 // 电器负载参数库
@@ -95,6 +101,8 @@ export function getComponentDisplayName(type: ComponentType): string {
     tv: '电视 (600W)',
     washer: '洗衣机 (1000W)',
     water_heater: '热水器 (2000W)',
+    outlet_5hole: '五孔插座',
+    dual_switch: '双联双控开关',
   }
   return names[type] || type
 }
@@ -115,6 +123,8 @@ export function getComponentColor(type: ComponentType): string {
     tv: '#f97316',       // 橙色
     washer: '#84cc16',   // 柠檬绿
     water_heater: '#ef4444', // 红色
+    outlet_5hole: '#10b981',  // 绿色
+    dual_switch: '#3b82f6',   // 蓝色
   }
   return colors[type] || '#6b7280'
 }

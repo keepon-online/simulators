@@ -45,6 +45,8 @@ function getDefaultName(type: ComponentType): string {
     tv: '电视',
     washer: '洗衣机',
     water_heater: '热水器',
+    outlet_5hole: '五孔插座',
+    dual_switch: '双联双控开关',
   }
   return names[type] || '未知元件'
 }
