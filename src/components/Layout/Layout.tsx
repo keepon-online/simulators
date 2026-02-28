@@ -9,6 +9,8 @@ interface LayoutProps {
     title?: string
     onSave?: () => void
     onLoad?: () => void
+    examples?: Array<{ name: string; description: string; diagram: import('@/types').CircuitDiagram }>
+    onLoadExample?: (diagram: import('@/types').CircuitDiagram) => void
   }
   sidebarProps?: {
     onDragStart?: (type: import('@/types').ComponentType) => void

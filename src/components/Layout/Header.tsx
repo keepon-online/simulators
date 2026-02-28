@@ -2,9 +2,11 @@ interface HeaderProps {
   title?: string
   onSave?: () => void
   onLoad?: () => void
+  examples?: Array<{ name: string; description: string; diagram: import('@/types').CircuitDiagram }>
+  onLoadExample?: (diagram: import('@/types').CircuitDiagram) => void
 }
 
-export function Header({ title = '家庭电路仿真系统', onSave, onLoad }: HeaderProps) {
+export function Header({ title = '家庭电路仿真系统', onSave, onLoad, examples, onLoadExample }: HeaderProps) {
   return (
     <header className="bg-gray-800 text-white px-4 py-3 flex items-center justify-between">
       <div className="flex items-center gap-3">
@@ -28,6 +30,21 @@ export function Header({ title = '家庭电路仿真系统', onSave, onLoad }: H
         >
           保存
         </button>
+        <select
+          value=""
+          onChange={(e) => {
+            const idx = parseInt(e.target.value)
+            if (!isNaN(idx) && examples && examples[idx]) {
+              onLoadExample?.(examples[idx].diagram)
+            }
+          }}
+          className="px-3 py-1.5 text-sm bg-gray-700 text-white rounded transition-colors"
+        >
+          <option value="" disabled>示例电路...</option>
+          {examples?.map((ex, idx) => (
+            <option key={idx} value={idx}>{ex.name}</option>
+          ))}
+        </select>
       </div>
     </header>
   )

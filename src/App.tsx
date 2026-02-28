@@ -5,6 +5,7 @@ import type { ComponentType, CircuitDiagram } from '@/types'
 import { createCircuitDiagram } from '@/engine/models'
 import { calculateCircuitState } from '@/engine/calculator'
 import { detectFaults } from '@/engine/faultDetector'
+import { CIRCUIT_EXAMPLES } from '@/data/examples'
 
 function App() {
   const [diagram, setDiagram] = useState<CircuitDiagram>(createCircuitDiagram('我的电路'))
@@ -27,6 +28,16 @@ function App() {
       alert('没有找到保存的电路')
     }
   }, [])
+
+  const handleLoadExample = useCallback((exampleDiagram: CircuitDiagram) => {
+    if (diagram.components.length > 0) {
+      if (!window.confirm('加载示例将替换当前电路，是否继续？')) {
+        return
+      }
+    }
+    setDiagram(exampleDiagram)
+    setSelectedComponentId(null)
+  }, [diagram.components.length])
 
   const handleDragStart = useCallback((_type: ComponentType) => {
     // Drag handled by CircuitCanvas
@@ -52,6 +63,8 @@ function App() {
         title: '家庭电路仿真系统',
         onSave: handleSave,
         onLoad: handleLoad,
+        examples: CIRCUIT_EXAMPLES,
+        onLoadExample: handleLoadExample,
       }}
       sidebarProps={{
         onDragStart: handleDragStart,
