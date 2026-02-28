@@ -94,9 +94,10 @@ export function createDefaultConnections(type: ComponentType): ConnectionPoint[]
     case 'tv':
     case 'washer':
     case 'water_heater':
-      // 家电：电源输入
+      // 家电：输入端（左侧中部）+ 输出端（右侧中部）
       return [
-        createConnectionPoint(30, 40),
+        createConnectionPoint(0, 25),   // 输入端
+        createConnectionPoint(60, 25),  // 输出端
       ]
     default:
       return [

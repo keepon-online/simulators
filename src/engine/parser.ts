@@ -4,7 +4,7 @@ import type {
   ComponentType,
   ConnectionPoint 
 } from '../types'
-import { generateId, createConnectionPoint } from './models'
+import { generateId, createConnectionPoint, createDefaultConnections } from './models'
 
 // SVG 元素类型
 interface SVGElement {
@@ -74,32 +74,6 @@ export function parseSVGElement(element: SVGElement): Component | null {
   }
 }
 
-// 创建默认连接点
-function createDefaultConnections(type: ComponentType): ConnectionPoint[] {
-  switch (type) {
-    case 'power':
-      return [createConnectionPoint(0, 20), createConnectionPoint(60, 20)]
-    case 'switch':
-      return [createConnectionPoint(0, 15), createConnectionPoint(50, 15)]
-    case 'light':
-    case 'outlet':
-    case 'resistor':
-      return [createConnectionPoint(0, 20), createConnectionPoint(50, 20)]
-    case 'circuit_breaker':
-    case 'fuse':
-      return [createConnectionPoint(0, 15), createConnectionPoint(50, 15)]
-    case 'wire':
-      return [createConnectionPoint(0, 10), createConnectionPoint(50, 10)]
-    case 'refrigerator':
-    case 'air_conditioner':
-    case 'tv':
-    case 'washer':
-    case 'water_heater':
-      return [createConnectionPoint(30, 40)]
-    default:
-      return [createConnectionPoint(0, 15), createConnectionPoint(50, 15)]
-  }
-}
 
 // 验证电路图完整性
 export function validateCircuitDiagram(diagram: CircuitDiagram): {

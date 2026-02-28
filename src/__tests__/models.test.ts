@@ -2,6 +2,7 @@ import { describe, it, expect } from 'vitest'
 import {
   createComponent,
   createCircuitDiagram,
+  createDefaultConnections,
   addComponent,
   removeComponent,
   toggleSwitch,
@@ -135,6 +136,17 @@ describe('Circuit Models', () => {
       const found = getComponent(diagram, 'non-existent')
       
       expect(found).toBeUndefined()
+    })
+  })
+})
+
+describe('家电双连接点', () => {
+  const applianceTypes = ['refrigerator', 'air_conditioner', 'tv', 'washer', 'water_heater'] as const
+  applianceTypes.forEach(type => {
+    it(`${type} 应有 2 个不同坐标的连接点`, () => {
+      const connections = createDefaultConnections(type)
+      expect(connections).toHaveLength(2)
+      expect(connections[0].x !== connections[1].x || connections[0].y !== connections[1].y).toBe(true)
     })
   })
 })
