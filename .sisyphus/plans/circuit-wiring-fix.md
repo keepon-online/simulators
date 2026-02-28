@@ -159,7 +159,7 @@ Max Concurrent: 2 (Wave 2)
 ## TODOs
 
 
-- [ ] 1. 修复数据层：家电双连接点 + 消除 parser.ts 重复
+- [x] 1. 修复数据层：家电双连接点 + 消除 parser.ts 重复
 
   **What to do**:
   - 修改 `src/engine/models.ts:createDefaultConnections` 中 5 种家电（refrigerator, air_conditioner, tv, washer, water_heater）从 1 个连接点改为 2 个：输入端 `(0, 25)` + 输出端 `(60, 25)`（基于家电矩形 60×50 尺寸，左右两侧中部）
@@ -243,7 +243,7 @@ Max Concurrent: 2 (Wave 2)
   - Files: `src/engine/models.ts`, `src/engine/parser.ts`, `src/__tests__/integration.test.ts`, `src/__tests__/models.test.ts`
   - Pre-commit: `bun test --run`
 
-- [ ] 2. 修复渲染层：renderWire pointId 匹配 + 家电 SVG 双圆圈
+- [x] 2. 修复渲染层：renderWire pointId 匹配 + 家电 SVG 双圆圈
 
   **What to do**:
   - 修改 `src/components/Editor/CircuitCanvas.tsx:renderWire` 函数（约第 147-199 行）：将 `fromComponent.connections[0]` 改为 `fromComponent.connections.find(c => c.id === wire.from.pointId) || fromComponent.connections[0]`（带 fallback 兼容旧数据）。toPoint 同理
@@ -325,7 +325,7 @@ Max Concurrent: 2 (Wave 2)
 
 ---
 
-- [ ] 3. 重写交互层：拖拽连线替代双击模式
+- [x] 3. 重写交互层：拖拽连线替代双击模式
   **What to do**:
   - 在 `CircuitCanvas` 组件中添加新状态：`wiringFrom: {componentId: string, pointId: string, x: number, y: number} | null` 和 `wiringMousePos: {x: number, y: number} | null`
   - 给每个元件渲染的连接点 `<circle>` 添加 `onMouseDown` 事件处理：记录起始端口信息（componentId, pointId, 绝对坐标），设置 `wiringFrom` 状态。必须 `e.stopPropagation()` 防止触发元件拖拽移动
@@ -412,7 +412,7 @@ Max Concurrent: 2 (Wave 2)
   - Files: `src/components/Editor/CircuitCanvas.tsx`
   - Pre-commit: `bun test --run`
 
-- [ ] 4. 创建 6 个家庭接线示例电路数据
+- [x] 4. 创建 6 个家庭接线示例电路数据
   **What to do**:
   - 创建 `src/data/examples.ts` 文件，导出 6 个 `CircuitDiagram` 对象和一个示例列表
   - 所有示例使用稳定字符串 ID（如 `"ex1-power"`, `"ex1-breaker"`, `"ex1-switch"`），不使用 `generateId()`
@@ -499,7 +499,7 @@ Max Concurrent: 2 (Wave 2)
   - Pre-commit: `bun test --run`
 
 ---
-- [ ] 5. Header 下拉菜单 + 示例加载集成
+- [x] 5. Header 下拉菜单 + 示例加载集成
   **What to do**:
   - 修改 `src/components/Layout/Header.tsx`：添加「示例电路」下拉菜单（`<select>` 或自定义 dropdown），选项为 6 个示例名称，默认显示「选择示例电路...」占位符
   - 添加 `onLoadExample: (diagram: CircuitDiagram) => void` prop 到 HeaderProps
