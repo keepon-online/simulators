@@ -13,6 +13,8 @@ export type ComponentType =
   | 'washer'       // 洗衣机
   | 'water_heater' // 热水器
   | 'resistor'     // 电阻（通用负载）
+  | 'outlet_5hole' // 五孔插座
+  | 'dual_switch'   // 双联双控开关
 
 // 电器负载类型
 export type ApplianceType = 
@@ -32,6 +34,8 @@ export type BasicComponentType =
   | 'fuse'
   | 'wire'
   | 'resistor'
+  | 'outlet_5hole'
+  | 'dual_switch'
 
 // 元件状态
 export type ComponentStatus = 'on' | 'off' | 'tripped' | 'blown' | 'normal'
@@ -49,6 +53,7 @@ export interface ConnectionPoint {
   id: string
   x: number
   y: number
+  label?: string
 }
 
 // 电路元件
@@ -80,6 +85,8 @@ export interface ComponentState {
   tripped?: boolean
   // 保险丝状态
   blown?: boolean
+  // 双联开关第二路状态
+  isOn2?: boolean
 }
 
 // 导线连接
