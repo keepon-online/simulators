@@ -27,6 +27,16 @@ const basicComponents: ComponentItem[] = [
     ),
   },
   {
+    type: 'dual_switch',
+    name: '双联双控',
+    icon: (
+      <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 9l4-4 4 4m0 6l-4 4-4-4" />
+        <line x1="4" y1="12" x2="20" y2="12" strokeWidth={1} />
+      </svg>
+    ),
+  },
+  {
     type: 'light',
     name: '灯具',
     icon: (
@@ -41,6 +51,15 @@ const basicComponents: ComponentItem[] = [
     icon: (
       <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
         <path fillRule="evenodd" d="M3 5a2 2 0 012-2h10a2 2 0 012 2v8a2 2 0 01-2 2h-2.22l.123.489.804.804A1 1 0 0113 18H7a1 1 0 01-.707-1.707l.804-.804L7.22 15H5a2 2 0 01-2-2V5zm5.771 7H5a1 1 0 00-1 1v1.128l2.054 2.054a2 2 0 001.416-.944l1.536-1.536a2 2 0 00.942-1.416l-.286-.286z" clipRule="evenodd" />
+      </svg>
+    ),
+  },
+  {
+    type: 'outlet_5hole',
+    name: '五孔插座',
+    icon: (
+      <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
+        <path fillRule="evenodd" d="M3 5a2 2 0 012-2h10a2 2 0 012 2v10a2 2 0 01-2 2H5a2 2 0 01-2-2V5zm4 1a1 1 0 100 2 1 1 0 000-2zm6 0a1 1 0 100 2 1 1 0 000-2zm-3 3a1 1 0 100 2 1 1 0 000-2zm-3 3a1 1 0 100 2 1 1 0 000-2zm6 0a1 1 0 100 2 1 1 0 000-2z" clipRule="evenodd" />
       </svg>
     ),
   },

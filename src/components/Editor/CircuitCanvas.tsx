@@ -59,6 +59,24 @@ function renderComponent(component: Component, isSelected: boolean, values?: { c
         </g>
       )
       
+    case 'dual_switch': {
+      const isOn1 = state.isOn
+      const isOn2 = state.isOn2 !== undefined ? state.isOn2 : true
+      return (
+        <g key={component.id} {...commonProps}>
+          <rect x={x} y={y} width={60} height={40} fill={color} rx={4} stroke={selectionStroke} strokeWidth={selectionStrokeWidth} />
+          {/* 第1组开关 */}
+          <line x1={x + 10} y1={y + 10} x2={x + 25} y2={y + 10} stroke="white" strokeWidth={2} />
+          <line x1={x + 25} y1={y + 10} x2={x + 50} y2={isOn1 ? y + 18 : y + 2} stroke="white" strokeWidth={2} />
+          {/* 分隔线 */}
+          <line x1={x + 5} y1={y + 20} x2={x + 55} y2={y + 20} stroke="white" strokeWidth={0.5} opacity={0.5} />
+          {/* 第2组开关 */}
+          <line x1={x + 10} y1={y + 30} x2={x + 25} y2={y + 30} stroke="white" strokeWidth={2} />
+          <line x1={x + 25} y1={y + 30} x2={x + 50} y2={isOn2 ? y + 38 : y + 22} stroke="white" strokeWidth={2} />
+          <text x={x + 30} y={y + 55} textAnchor="middle" fill="#6b7280" fontSize={8}>{name}</text>
+        </g>
+      )
+    }
     case 'light':
       const isLit = state.isOn && values && values.current > 0
       return (
@@ -79,6 +97,18 @@ function renderComponent(component: Component, isSelected: boolean, values?: { c
         </g>
       )
       
+    case 'outlet_5hole':
+      return (
+        <g key={component.id} {...commonProps}>
+          <rect x={x} y={y} width={50} height={40} fill={color} rx={4} stroke={selectionStroke} strokeWidth={selectionStrokeWidth} />
+          {/* 三孔：上方一个圆（E/地线） */}
+          <circle cx={x + 25} cy={y + 12} r={3} fill="white" />
+          {/* 两孔：下方两个竖线（L/N） */}
+          <line x1={x + 15} y1={y + 24} x2={x + 15} y2={y + 32} stroke="white" strokeWidth={2} />
+          <line x1={x + 35} y1={y + 24} x2={x + 35} y2={y + 32} stroke="white" strokeWidth={2} />
+          <text x={x + 25} y={y + 55} textAnchor="middle" fill="#6b7280" fontSize={8}>{name}</text>
+        </g>
+      )
     case 'circuit_breaker':
       const isTripped = state.tripped
       return (
@@ -146,6 +176,9 @@ function renderWire(
   
   if (!fromPoint || !toPoint) return null
   
+  const wireLabel = fromPoint?.label || ''
+  const wireColor = wireLabel.startsWith('L') ? '#ef4444' : wireLabel === 'N' ? '#3b82f6' : wireLabel === 'E' ? '#22c55e' : '#6b7280'
+  
   const x1 = fromComponent.position.x + fromPoint.x
   const y1 = fromComponent.position.y + fromPoint.y
   const x2 = toComponent.position.x + toPoint.x
@@ -165,7 +198,7 @@ function renderWire(
   
   return (
     <g key={wire.id}>
-      <line x1={x1} y1={y1} x2={x2} y2={y2} stroke="#6b7280" strokeWidth={3} />
+      <line x1={x1} y1={y1} x2={x2} y2={y2} stroke={wireColor} strokeWidth={3} />
       {hasCurrent && direction !== 'none' && (
         <line
           x1={x1}
@@ -253,6 +286,16 @@ export function CircuitCanvas({
     
     if (component.type === 'switch') {
       onDiagramChange(toggleSwitch(diagram, componentId))
+      return
+    }
+    
+    if (component.type === 'dual_switch') {
+      const svg = svgRef.current
+      if (!svg) return
+      const rect = svg.getBoundingClientRect()
+      const clickY = e.clientY - rect.top - component.position.y
+      const groupIndex: 1 | 2 = clickY < 20 ? 1 : 2
+      onDiagramChange(toggleSwitch(diagram, componentId, groupIndex))
       return
     }
     
@@ -361,16 +404,33 @@ export function CircuitCanvas({
                 const cx = component.position.x + conn.x
                 const cy = component.position.y + conn.y
                 return (
-                  <circle
-                    key={conn.id}
-                    cx={cx}
-                    cy={cy}
-                    r={6}
-                    fill="#6b7280"
-                    style={{ cursor: 'crosshair' }}
-                    onMouseDown={(e) => handlePortMouseDown(e, component.id, conn.id, cx, cy)}
-                    onMouseUp={(e) => handlePortMouseUp(e, component.id, conn.id)}
-                  />
+                  <g key={conn.id}>
+                    <circle
+                      cx={cx}
+                      cy={cy}
+                      r={6}
+                      fill="#6b7280"
+                      style={{ cursor: 'crosshair' }}
+                      onMouseDown={(e) => handlePortMouseDown(e, component.id, conn.id, cx, cy)}
+                      onMouseUp={(e) => handlePortMouseUp(e, component.id, conn.id)}
+                    />
+                    {conn.label && (
+                      <text
+                        x={cx}
+                        y={cy - 10}
+                        textAnchor="middle"
+                        fontSize={8}
+                        fontWeight="bold"
+                        fill={
+                          conn.label.startsWith('L') ? '#ef4444' :
+                          conn.label === 'N' ? '#3b82f6' :
+                          conn.label === 'E' ? '#22c55e' : '#6b7280'
+                        }
+                      >
+                        {conn.label}
+                      </text>
+                    )}
+                  </g>
                 )
               })}
             </g>

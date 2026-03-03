@@ -5,8 +5,12 @@ import { BASIC_COMPONENT_PARAMS, APPLIANCE_PARAMS } from '../engine/componentPar
 // 辅助函数：手动构造元件和导线（不使用 generateId）
 // ============================================================
 
-function cp(id: string, x: number, y: number): ConnectionPoint {
-  return { id, x, y }
+function cp(id: string, x: number, y: number, label?: string): ConnectionPoint {
+  const point: ConnectionPoint = { id, x, y }
+  if (label !== undefined) {
+    point.label = label
+  }
+  return point
 }
 
 function makeComponent(
@@ -53,16 +57,16 @@ const ts = '2026-01-01T00:00:00.000Z'
 
 const ex1Components: Component[] = [
   makeComponent('ex1-power', 'power', '电源', { x: 100, y: 300 },
-    [cp('ex1-power-in', 0, 20), cp('ex1-power-out', 60, 20)],
+    [cp('ex1-power-in', 0, 20, 'N'), cp('ex1-power-out', 60, 20, 'L')],
     BASIC_COMPONENT_PARAMS.power),
   makeComponent('ex1-breaker', 'circuit_breaker', '断路器', { x: 300, y: 300 },
-    [cp('ex1-breaker-in', 0, 15), cp('ex1-breaker-out', 50, 15)],
+    [cp('ex1-breaker-in', 0, 15, 'L'), cp('ex1-breaker-out', 50, 15, 'L')],
     BASIC_COMPONENT_PARAMS.circuit_breaker),
   makeComponent('ex1-switch', 'switch', '开关', { x: 500, y: 300 },
-    [cp('ex1-switch-in', 0, 15), cp('ex1-switch-out', 50, 15)],
+    [cp('ex1-switch-in', 0, 15, 'L'), cp('ex1-switch-out', 50, 15, 'L')],
     BASIC_COMPONENT_PARAMS.switch),
   makeComponent('ex1-light', 'light', '灯具', { x: 700, y: 300 },
-    [cp('ex1-light-in', 0, 20), cp('ex1-light-out', 50, 20)],
+    [cp('ex1-light-in', 0, 20, 'L'), cp('ex1-light-out', 50, 20, 'N')],
     BASIC_COMPONENT_PARAMS.light),
 ]
 
@@ -80,19 +84,19 @@ const ex1Wires: Wire[] = [
 
 const ex2Components: Component[] = [
   makeComponent('ex2-power', 'power', '电源', { x: 100, y: 300 },
-    [cp('ex2-power-in', 0, 20), cp('ex2-power-out', 60, 20)],
+    [cp('ex2-power-in', 0, 20, 'N'), cp('ex2-power-out', 60, 20, 'L')],
     BASIC_COMPONENT_PARAMS.power),
   makeComponent('ex2-breaker', 'circuit_breaker', '断路器', { x: 300, y: 300 },
-    [cp('ex2-breaker-in', 0, 15), cp('ex2-breaker-out', 50, 15)],
+    [cp('ex2-breaker-in', 0, 15, 'L'), cp('ex2-breaker-out', 50, 15, 'L')],
     BASIC_COMPONENT_PARAMS.circuit_breaker),
   makeComponent('ex2-switch1', 'switch', '开关1', { x: 500, y: 200 },
-    [cp('ex2-switch1-in', 0, 15), cp('ex2-switch1-out', 50, 15)],
+    [cp('ex2-switch1-in', 0, 15, 'L'), cp('ex2-switch1-out', 50, 15, 'L')],
     BASIC_COMPONENT_PARAMS.switch),
   makeComponent('ex2-switch2', 'switch', '开关2', { x: 500, y: 400 },
-    [cp('ex2-switch2-in', 0, 15), cp('ex2-switch2-out', 50, 15)],
+    [cp('ex2-switch2-in', 0, 15, 'L'), cp('ex2-switch2-out', 50, 15, 'L')],
     BASIC_COMPONENT_PARAMS.switch),
   makeComponent('ex2-light', 'light', '灯具', { x: 700, y: 300 },
-    [cp('ex2-light-in', 0, 20), cp('ex2-light-out', 50, 20)],
+    [cp('ex2-light-in', 0, 20, 'L'), cp('ex2-light-out', 50, 20, 'N')],
     BASIC_COMPONENT_PARAMS.light),
 ]
 
@@ -111,19 +115,19 @@ const ex2Wires: Wire[] = [
 
 const ex3Components: Component[] = [
   makeComponent('ex3-power', 'power', '电源', { x: 100, y: 300 },
-    [cp('ex3-power-in', 0, 20), cp('ex3-power-out', 60, 20)],
+    [cp('ex3-power-in', 0, 20, 'N'), cp('ex3-power-out', 60, 20, 'L')],
     BASIC_COMPONENT_PARAMS.power),
   makeComponent('ex3-breaker', 'circuit_breaker', '断路器', { x: 300, y: 300 },
-    [cp('ex3-breaker-in', 0, 15), cp('ex3-breaker-out', 50, 15)],
+    [cp('ex3-breaker-in', 0, 15, 'L'), cp('ex3-breaker-out', 50, 15, 'L')],
     BASIC_COMPONENT_PARAMS.circuit_breaker),
   makeComponent('ex3-outlet1', 'outlet', '插座1', { x: 550, y: 150 },
-    [cp('ex3-outlet1-in', 0, 20), cp('ex3-outlet1-out', 50, 20)],
+    [cp('ex3-outlet1-in', 0, 20, 'L'), cp('ex3-outlet1-out', 50, 20, 'N')],
     { ...BASIC_COMPONENT_PARAMS.outlet, power: 200, resistance: 242 }),
   makeComponent('ex3-outlet2', 'outlet', '插座2', { x: 550, y: 300 },
-    [cp('ex3-outlet2-in', 0, 20), cp('ex3-outlet2-out', 50, 20)],
+    [cp('ex3-outlet2-in', 0, 20, 'L'), cp('ex3-outlet2-out', 50, 20, 'N')],
     { ...BASIC_COMPONENT_PARAMS.outlet, power: 200, resistance: 242 }),
   makeComponent('ex3-outlet3', 'outlet', '插座3', { x: 550, y: 450 },
-    [cp('ex3-outlet3-in', 0, 20), cp('ex3-outlet3-out', 50, 20)],
+    [cp('ex3-outlet3-in', 0, 20, 'L'), cp('ex3-outlet3-out', 50, 20, 'N')],
     { ...BASIC_COMPONENT_PARAMS.outlet, power: 200, resistance: 242 }),
 ]
 
@@ -139,16 +143,16 @@ const ex3Wires: Wire[] = [
 // ============================================================
 const ex4Components: Component[] = [
   makeComponent('ex4-power', 'power', '电源', { x: 100, y: 300 },
-    [cp('ex4-power-in', 0, 20), cp('ex4-power-out', 60, 20)],
+    [cp('ex4-power-in', 0, 20, 'N'), cp('ex4-power-out', 60, 20, 'L')],
     BASIC_COMPONENT_PARAMS.power),
   makeComponent('ex4-breaker', 'circuit_breaker', '厨房断路器', { x: 300, y: 300 },
-    [cp('ex4-breaker-in', 0, 15), cp('ex4-breaker-out', 50, 15)],
+    [cp('ex4-breaker-in', 0, 15, 'L'), cp('ex4-breaker-out', 50, 15, 'L')],
     BASIC_COMPONENT_PARAMS.circuit_breaker),
   makeComponent('ex4-fridge', 'refrigerator', '冰箱', { x: 550, y: 200 },
-    [cp('ex4-fridge-in', 0, 25), cp('ex4-fridge-out', 60, 25)],
+    [cp('ex4-fridge-in', 0, 25, 'L'), cp('ex4-fridge-out', 60, 25, 'N')],
     APPLIANCE_PARAMS.refrigerator),
   makeComponent('ex4-heater', 'water_heater', '热水器', { x: 550, y: 420 },
-    [cp('ex4-heater-in', 0, 25), cp('ex4-heater-out', 60, 25)],
+    [cp('ex4-heater-in', 0, 25, 'L'), cp('ex4-heater-out', 60, 25, 'N')],
     APPLIANCE_PARAMS.water_heater),
 ]
 const ex4Wires: Wire[] = [
@@ -162,13 +166,13 @@ const ex4Wires: Wire[] = [
 // ============================================================
 const ex5Components: Component[] = [
   makeComponent('ex5-power', 'power', '电源', { x: 100, y: 300 },
-    [cp('ex5-power-in', 0, 20), cp('ex5-power-out', 60, 20)],
+    [cp('ex5-power-in', 0, 20, 'N'), cp('ex5-power-out', 60, 20, 'L')],
     BASIC_COMPONENT_PARAMS.power),
   makeComponent('ex5-breaker', 'circuit_breaker', '空调断路器(25A)', { x: 350, y: 300 },
-    [cp('ex5-breaker-in', 0, 15), cp('ex5-breaker-out', 50, 15)],
+    [cp('ex5-breaker-in', 0, 15, 'L'), cp('ex5-breaker-out', 50, 15, 'L')],
     { ...BASIC_COMPONENT_PARAMS.circuit_breaker, maxCurrent: 25 }),
   makeComponent('ex5-ac', 'air_conditioner', '空调', { x: 600, y: 300 },
-    [cp('ex5-ac-in', 0, 25), cp('ex5-ac-out', 60, 25)],
+    [cp('ex5-ac-in', 0, 25, 'L'), cp('ex5-ac-out', 60, 25, 'N')],
     APPLIANCE_PARAMS.air_conditioner),
 ]
 const ex5Wires: Wire[] = [
@@ -186,38 +190,38 @@ const ex5Wires: Wire[] = [
 const ex6Components: Component[] = [
   // 主干
   makeComponent('ex6-power', 'power', '总电源', { x: 50, y: 350 },
-    [cp('ex6-power-in', 0, 20), cp('ex6-power-out', 60, 20)],
+    [cp('ex6-power-in', 0, 20, 'N'), cp('ex6-power-out', 60, 20, 'L')],
     BASIC_COMPONENT_PARAMS.power),
   makeComponent('ex6-main-breaker', 'circuit_breaker', '总断路器', { x: 200, y: 350 },
-    [cp('ex6-mb-in', 0, 15), cp('ex6-mb-out', 50, 15)],
+    [cp('ex6-mb-in', 0, 15, 'L'), cp('ex6-mb-out', 50, 15, 'L')],
     { ...BASIC_COMPONENT_PARAMS.circuit_breaker, maxCurrent: 63 }),
   // 照明分支
   makeComponent('ex6-light-switch', 'switch', '照明开关', { x: 450, y: 100 },
-    [cp('ex6-ls-in', 0, 15), cp('ex6-ls-out', 50, 15)],
+    [cp('ex6-ls-in', 0, 15, 'L'), cp('ex6-ls-out', 50, 15, 'L')],
     BASIC_COMPONENT_PARAMS.switch),
   makeComponent('ex6-light', 'light', '客厅灯', { x: 650, y: 100 },
-    [cp('ex6-light-in', 0, 20), cp('ex6-light-out', 50, 20)],
+    [cp('ex6-light-in', 0, 20, 'L'), cp('ex6-light-out', 50, 20, 'N')],
     BASIC_COMPONENT_PARAMS.light),
   // 插座分支
   makeComponent('ex6-outlet1', 'outlet', '插座1', { x: 450, y: 250 },
-    [cp('ex6-o1-in', 0, 20), cp('ex6-o1-out', 50, 20)],
+    [cp('ex6-o1-in', 0, 20, 'L'), cp('ex6-o1-out', 50, 20, 'N')],
     { ...BASIC_COMPONENT_PARAMS.outlet, power: 200, resistance: 242 }),
   makeComponent('ex6-outlet2', 'outlet', '插座2', { x: 650, y: 250 },
-    [cp('ex6-o2-in', 0, 20), cp('ex6-o2-out', 50, 20)],
+    [cp('ex6-o2-in', 0, 20, 'L'), cp('ex6-o2-out', 50, 20, 'N')],
     { ...BASIC_COMPONENT_PARAMS.outlet, power: 200, resistance: 242 }),
   makeComponent('ex6-outlet3', 'outlet', '插座3', { x: 850, y: 250 },
-    [cp('ex6-o3-in', 0, 20), cp('ex6-o3-out', 50, 20)],
+    [cp('ex6-o3-in', 0, 20, 'L'), cp('ex6-o3-out', 50, 20, 'N')],
     { ...BASIC_COMPONENT_PARAMS.outlet, power: 200, resistance: 242 }),
   // 空调分支
   makeComponent('ex6-ac', 'air_conditioner', '空调', { x: 450, y: 420 },
-    [cp('ex6-ac-in', 0, 25), cp('ex6-ac-out', 60, 25)],
+    [cp('ex6-ac-in', 0, 25, 'L'), cp('ex6-ac-out', 60, 25, 'N')],
     APPLIANCE_PARAMS.air_conditioner),
   // 厨房分支
   makeComponent('ex6-fridge', 'refrigerator', '冰箱', { x: 450, y: 570 },
-    [cp('ex6-fridge-in', 0, 25), cp('ex6-fridge-out', 60, 25)],
+    [cp('ex6-fridge-in', 0, 25, 'L'), cp('ex6-fridge-out', 60, 25, 'N')],
     APPLIANCE_PARAMS.refrigerator),
   makeComponent('ex6-heater', 'water_heater', '热水器', { x: 700, y: 570 },
-    [cp('ex6-heater-in', 0, 25), cp('ex6-heater-out', 60, 25)],
+    [cp('ex6-heater-in', 0, 25, 'L'), cp('ex6-heater-out', 60, 25, 'N')],
     APPLIANCE_PARAMS.water_heater),
 ]
 const ex6Wires: Wire[] = [
@@ -238,6 +242,59 @@ const ex6Wires: Wire[] = [
 ]
 
 // ============================================================
+// 示例 7: 五孔插座接线
+// 电源 → 断路器 → 五孔插座（L/N/E 三端口）
+// ============================================================
+
+const ex7Components: Component[] = [
+  makeComponent('ex7-power', 'power', '电源', { x: 100, y: 300 },
+    [cp('ex7-power-in', 0, 20, 'N'), cp('ex7-power-out', 60, 20, 'L')],
+    BASIC_COMPONENT_PARAMS.power),
+  makeComponent('ex7-breaker', 'circuit_breaker', '断路器', { x: 300, y: 300 },
+    [cp('ex7-breaker-in', 0, 15, 'L'), cp('ex7-breaker-out', 50, 15, 'L')],
+    BASIC_COMPONENT_PARAMS.circuit_breaker),
+  makeComponent('ex7-outlet', 'outlet_5hole', '五孔插座', { x: 550, y: 300 },
+    [cp('ex7-outlet-L', 0, 20, 'L'), cp('ex7-outlet-N', 50, 20, 'N'), cp('ex7-outlet-E', 25, 0, 'E')],
+    { ...BASIC_COMPONENT_PARAMS.outlet_5hole, power: 200, resistance: 242 }),
+]
+
+const ex7Wires: Wire[] = [
+  makeWire('ex7-w1', 'ex7-power', 'ex7-power-out', 'ex7-breaker', 'ex7-breaker-in'),
+  makeWire('ex7-w2', 'ex7-breaker', 'ex7-breaker-out', 'ex7-outlet', 'ex7-outlet-L'),
+]
+
+// ============================================================
+// 示例 8: 双联双控接线
+// 电源 → 断路器 → 双联双控开关 → 灯1 + 灯2
+// ============================================================
+
+const ex8Components: Component[] = [
+  makeComponent('ex8-power', 'power', '电源', { x: 100, y: 300 },
+    [cp('ex8-power-in', 0, 20, 'N'), cp('ex8-power-out', 60, 20, 'L')],
+    BASIC_COMPONENT_PARAMS.power),
+  makeComponent('ex8-breaker', 'circuit_breaker', '断路器', { x: 300, y: 300 },
+    [cp('ex8-breaker-in', 0, 15, 'L'), cp('ex8-breaker-out', 50, 15, 'L')],
+    BASIC_COMPONENT_PARAMS.circuit_breaker),
+  makeComponent('ex8-dual-sw', 'dual_switch', '双联双控开关', { x: 500, y: 280 },
+    [cp('ex8-dsw-L1in', 0, 10, 'L1'), cp('ex8-dsw-L1out', 60, 10, 'L1'), cp('ex8-dsw-L2in', 0, 30, 'L2'), cp('ex8-dsw-L2out', 60, 30, 'L2')],
+    BASIC_COMPONENT_PARAMS.dual_switch),
+  makeComponent('ex8-light1', 'light', '灯1', { x: 700, y: 200 },
+    [cp('ex8-light1-in', 0, 20, 'L'), cp('ex8-light1-out', 50, 20, 'N')],
+    BASIC_COMPONENT_PARAMS.light),
+  makeComponent('ex8-light2', 'light', '灯2', { x: 700, y: 400 },
+    [cp('ex8-light2-in', 0, 20, 'L'), cp('ex8-light2-out', 50, 20, 'N')],
+    BASIC_COMPONENT_PARAMS.light),
+]
+
+const ex8Wires: Wire[] = [
+  makeWire('ex8-w1', 'ex8-power', 'ex8-power-out', 'ex8-breaker', 'ex8-breaker-in'),
+  makeWire('ex8-w2', 'ex8-breaker', 'ex8-breaker-out', 'ex8-dual-sw', 'ex8-dsw-L1in'),
+  makeWire('ex8-w3', 'ex8-breaker', 'ex8-breaker-out', 'ex8-dual-sw', 'ex8-dsw-L2in'),
+  makeWire('ex8-w4', 'ex8-dual-sw', 'ex8-dsw-L1out', 'ex8-light1', 'ex8-light1-in'),
+  makeWire('ex8-w5', 'ex8-dual-sw', 'ex8-dsw-L2out', 'ex8-light2', 'ex8-light2-in'),
+]
+
+// ============================================================
 // 导出所有示例
 // ============================================================
 
@@ -251,6 +308,8 @@ export const outletCircuit = makeDiagram('ex3', '插座回路', ex3Components, e
 export const kitchenCircuit = makeDiagram('ex4', '厨房回路', ex4Components, ex4Wires)
 export const acDedicatedLine = makeDiagram('ex5', '空调专线', ex5Components, ex5Wires)
 export const wholeHouseDistribution = makeDiagram('ex6', '全屋配电', ex6Components, ex6Wires)
+export const fiveHoleOutletWiring = makeDiagram('ex7', '五孔插座接线', ex7Components, ex7Wires)
+export const dualSwitchWiring = makeDiagram('ex8', '双联双控接线', ex8Components, ex8Wires)
 
 export const CIRCUIT_EXAMPLES: Array<{ name: string; description: string; diagram: CircuitDiagram }> = [
   {
@@ -282,5 +341,15 @@ export const CIRCUIT_EXAMPLES: Array<{ name: string; description: string; diagra
     name: '全屋配电',
     description: '完整家庭配电系统：总断路器下分照明、插座、空调、厨房4个分支',
     diagram: wholeHouseDistribution,
+  },
+  {
+    name: '五孔插座接线',
+    description: '五孔插座的标准接线：火线L、零线N、地线E的正确接法',
+    diagram: fiveHoleOutletWiring,
+  },
+  {
+    name: '双联双控接线',
+    description: '双联双控开关接线：一个开关面板控制两盏灯的独立开关',
+    diagram: dualSwitchWiring,
   },
 ]

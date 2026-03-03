@@ -150,3 +150,64 @@ describe('家电双连接点', () => {
     })
   })
 })
+
+describe('outlet_5hole connections', () => {
+  it('should have 3 connection points with correct labels', () => {
+    const connections = createDefaultConnections('outlet_5hole')
+    expect(connections).toHaveLength(3)
+    expect(connections[0].label).toBe('L')
+    expect(connections[1].label).toBe('N')
+    expect(connections[2].label).toBe('E')
+  })
+})
+
+describe('dual_switch connections', () => {
+  it('should have 4 connection points with correct labels', () => {
+    const connections = createDefaultConnections('dual_switch')
+    expect(connections).toHaveLength(4)
+    expect(connections[0].label).toBe('L1')
+    expect(connections[1].label).toBe('L1')
+    expect(connections[2].label).toBe('L2')
+    expect(connections[3].label).toBe('L2')
+  })
+})
+
+describe('existing component labels', () => {
+  it('power should have N and L labels', () => {
+    const connections = createDefaultConnections('power')
+    expect(connections[0].label).toBe('N')
+    expect(connections[1].label).toBe('L')
+  })
+
+  it('switch should have L and L labels', () => {
+    const connections = createDefaultConnections('switch')
+    expect(connections[0].label).toBe('L')
+    expect(connections[1].label).toBe('L')
+  })
+
+  it('light should have L and N labels', () => {
+    const connections = createDefaultConnections('light')
+    expect(connections[0].label).toBe('L')
+    expect(connections[1].label).toBe('N')
+  })
+})
+
+describe('dual_switch toggle', () => {
+  it('should toggle group 1 (isOn) by default', () => {
+    const diagram = createCircuitDiagram('test')
+    const comp = createComponent('dual_switch', 'test-sw', { x: 0, y: 0 })
+    const d1 = addComponent(diagram, comp)
+    expect(d1.components[0].state.isOn).toBe(true)
+    const d2 = toggleSwitch(d1, comp.id)
+    expect(d2.components[0].state.isOn).toBe(false)
+  })
+
+  it('should toggle group 2 (isOn2) with groupIndex=2', () => {
+    const diagram = createCircuitDiagram('test')
+    const comp = createComponent('dual_switch', 'test-sw', { x: 0, y: 0 })
+    const d1 = addComponent(diagram, comp)
+    expect(d1.components[0].state.isOn2).toBe(true)
+    const d2 = toggleSwitch(d1, comp.id, 2)
+    expect(d2.components[0].state.isOn2).toBe(false)
+  })
+})
