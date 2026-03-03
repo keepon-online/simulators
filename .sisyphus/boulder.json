@@ -1,7 +1,10 @@
 {
-  "active_plan": "C:\\project\\simulators\\.sisyphus\\plans\\circuit-wiring-fix.md",
-  "started_at": "2026-02-28T16:04:20.003Z",
-  "session_ids": ["ses_35b0e3b81ffeHeIN4bsm88aIXl"],
-  "plan_name": "circuit-wiring-fix",
+  "active_plan": "C:\\project\\simulators\\.sisyphus\\plans\\ln-labels-new-components.md",
+  "started_at": "2026-02-28T16:58:12.964Z",
+  "session_ids": [
+    "ses_35b0e3b81ffeHeIN4bsm88aIXl"
+  ],
+  "plan_name": "ln-labels-new-components",
+  "agent": "atlas",
   "worktree_path": "C:\\project\\simulators"
 }

@@ -62,9 +62,9 @@
 - Header 下拉菜单 + App 集成
 
 ### Definition of Done
-- [ ] `bun test --run` 全部通过（含新增测试）
-- [ ] 6 个示例加载后 `calculateCircuitState(diagram).isValid === true && totalPower > 0`
-- [ ] 无 `connections[0]` 硬编码残留（renderWire / wire 创建逻辑中）
+- [x] `bun test --run` 全部通过（含新增测试）
+- [x] 6 个示例加载后 `calculateCircuitState(diagram).isValid === true && totalPower > 0`
+- [x] 无 `connections[0]` 硬编码残留（renderWire / wire 创建逻辑中）
 
 ### Must Have
 - renderWire 通过 pointId 匹配连接点
@@ -208,10 +208,10 @@ Max Concurrent: 2 (Wave 2)
   - integration.test.ts — 家电从 1 个连接点变 2 个后，测试中 `connections[0]` 的 wire 创建可能仍然有效但语义不对，需审查并更新
 
   **Acceptance Criteria**:
-  - [ ] 5 种家电 `createDefaultConnections` 返回 `connections.length === 2`
-  - [ ] parser.ts 不再包含本地 `createDefaultConnections` 函数，改为 import
-  - [ ] `bun test --run` → ALL PASS (0 failures)
-  - [ ] 新增测试文件或测试用例验证家电双连接点
+  - [x] 5 种家电 `createDefaultConnections` 返回 `connections.length === 2`
+  - [x] parser.ts 不再包含本地 `createDefaultConnections` 函数，改为 import
+  - [x] `bun test --run` → ALL PASS (0 failures)
+  - [x] 新增测试文件或测试用例验证家电双连接点
 
   **QA Scenarios (MANDATORY):**
 
@@ -288,10 +288,10 @@ Max Concurrent: 2 (Wave 2)
   - power 双圆圈:48-49 — 已有的双端口渲染模式，家电应遵循相同模式
 
   **Acceptance Criteria**:
-  - [ ] renderWire 使用 `wire.from.pointId` / `wire.to.pointId` 匹配连接点
-  - [ ] 5 种家电在 SVG 中渲染 2 个 `<circle>` 连接点
-  - [ ] `ast_grep_search` 确认 renderWire 中无 `connections[0]` 硬编码
-  - [ ] `bun test --run` → ALL PASS
+  - [x] renderWire 使用 `wire.from.pointId` / `wire.to.pointId` 匹配连接点
+  - [x] 5 种家电在 SVG 中渲染 2 个 `<circle>` 连接点
+  - [x] `ast_grep_search` 确认 renderWire 中无 `connections[0]` 硬编码
+  - [x] `bun test --run` → ALL PASS
 
   **QA Scenarios (MANDATORY):**
 
@@ -370,12 +370,12 @@ Max Concurrent: 2 (Wave 2)
   - handleComponentClick — 需要精确识别哪些逻辑是连线相关的（需移除）vs 开关切换/选中（需保留）
   - createWire — 最终创建 wire 时需要的参数格式
   **Acceptance Criteria**:
-  - [ ] 拖拽端口连线可创建 Wire（from/to pointId 正确）
-  - [ ] 拖拽过程中显示临时虚线
-  - [ ] 自连接被禁止（同一元件的两个端口不能连线）
-  - [ ] 旧的 `connectingFrom` 状态和 `handleDoubleClick` 已移除
-  - [ ] 端口圆圈 `onMouseDown` 不触发元件拖拽移动
-  - [ ] `bun test --run` → ALL PASS
+  - [x] 拖拽端口连线可创建 Wire（from/to pointId 正确）
+  - [x] 拖拽过程中显示临时虚线
+  - [x] 自连接被禁止（同一元件的两个端口不能连线）
+  - [x] 旧的 `connectingFrom` 状态和 `handleDoubleClick` 已移除
+  - [x] 端口圆圈 `onMouseDown` 不触发元件拖拽移动
+  - [x] `bun test --run` → ALL PASS
   **QA Scenarios (MANDATORY):**
   ```
   Scenario: 拖拽连线创建 Wire 验证
@@ -466,12 +466,12 @@ Max Concurrent: 2 (Wave 2)
   - integration.test.ts — 展示了如何组装电路并验证，示例测试应遵循相同模式
   - componentParams.ts — 示例中电器的 params 应与默认参数一致
   **Acceptance Criteria**:
-  - [ ] `src/data/examples.ts` 存在且导出 6 个示例
-  - [ ] 每个示例包含 power 元件
-  - [ ] 所有 ID 为稳定字符串（不含时间戳或随机数）
-  - [ ] 每个示例 `calculateCircuitState(diagram).isValid === true`
-  - [ ] 每个示例 `calculateCircuitState(diagram).totalPower > 0`
-  - [ ] `bun test --run` → ALL PASS（含新增 examples.test.ts）
+  - [x] `src/data/examples.ts` 存在且导出 6 个示例
+  - [x] 每个示例包含 power 元件
+  - [x] 所有 ID 为稳定字符串（不含时间戳或随机数）
+  - [x] 每个示例 `calculateCircuitState(diagram).isValid === true`
+  - [x] 每个示例 `calculateCircuitState(diagram).totalPower > 0`
+  - [x] `bun test --run` → ALL PASS（含新增 examples.test.ts）
   **QA Scenarios (MANDATORY):**
   ```
   Scenario: 6 个示例电路有效性验证
@@ -539,11 +539,11 @@ Max Concurrent: 2 (Wave 2)
   - Layout.tsx — props 传递链的中间层，需要扩展 headerProps 类型
   - App.tsx — 示例加载的业务逻辑实现位置，handleSave/handleLoad 是模式参考
   **Acceptance Criteria**:
-  - [ ] Header 中显示「示例电路」下拉菜单，包含 6 个选项
-  - [ ] 选择示例后 diagram 被替换为对应示例数据
-  - [ ] 加载示例时 selectedComponentId 重置为 null
-  - [ ] 当前画布有内容时加载示例会弹出确认对话框
-  - [ ] `bun test --run` → ALL PASS
+  - [x] Header 中显示「示例电路」下拉菜单，包含 6 个选项
+  - [x] 选择示例后 diagram 被替换为对应示例数据
+  - [x] 加载示例时 selectedComponentId 重置为 null
+  - [x] 当前画布有内容时加载示例会弹出确认对话框
+  - [x] `bun test --run` → ALL PASS
   **QA Scenarios (MANDATORY):**
   ```
   Scenario: Header 示例下拉菜单渲染验证
@@ -577,19 +577,19 @@ Max Concurrent: 2 (Wave 2)
 
 > 4 review agents run in PARALLEL. ALL must APPROVE. Rejection → fix → re-run.
 
-- [ ] F1. **Plan Compliance Audit** — `oracle`
+- [x] F1. **Plan Compliance Audit** — `oracle`
   Read the plan end-to-end. For each "Must Have": verify implementation exists (read file, run command). For each "Must NOT Have": search codebase for forbidden patterns — reject with file:line if found. Check evidence files exist in .sisyphus/evidence/. Compare deliverables against plan.
   Output: `Must Have [N/N] | Must NOT Have [N/N] | Tasks [N/N] | VERDICT: APPROVE/REJECT`
 
-- [ ] F2. **Code Quality Review** — `unspecified-high`
+- [x] F2. **Code Quality Review** — `unspecified-high`
   Run `bun test --run`. Review all changed files for: `as any`/`@ts-ignore`, empty catches, console.log in prod, commented-out code, unused imports. Check AI slop: excessive comments, over-abstraction, generic names. Verify no `connections[0]` hardcoding remains in renderWire or wire creation logic.
   Output: `Build [PASS/FAIL] | Tests [N pass/N fail] | Files [N clean/N issues] | VERDICT`
 
-- [ ] F3. **Real Manual QA** — `unspecified-high` (+ `playwright` skill)
+- [x] F3. **Real Manual QA** — `unspecified-high` (+ `playwright` skill)
   Start dev server. Load each of 6 examples via Header dropdown — verify circuit renders correctly with visible wires and components. Test drag-to-connect: create new wire by dragging from port to port. Test edge cases: self-connection attempt, delete component during drag. Save to `.sisyphus/evidence/final-qa/`.
   Output: `Scenarios [N/N pass] | Integration [N/N] | Edge Cases [N tested] | VERDICT`
 
-- [ ] F4. **Scope Fidelity Check** — `deep`
+- [x] F4. **Scope Fidelity Check** — `deep`
   For each task: read "What to do", read actual diff. Verify 1:1 — everything in spec was built, nothing beyond spec was built. Check "Must NOT do" compliance. Detect cross-task contamination. Flag unaccounted changes.
   Output: `Tasks [N/N compliant] | Contamination [CLEAN/N issues] | Unaccounted [CLEAN/N files] | VERDICT`
 
@@ -613,9 +613,9 @@ bun test --run  # Expected: ALL PASS, 0 failures
 ```
 
 ### Final Checklist
-- [ ] All "Must Have" present
-- [ ] All "Must NOT Have" absent
-- [ ] All tests pass (existing 22 + new tests)
-- [ ] 6 examples load correctly with valid circuit state
-- [ ] Drag-to-connect wiring works
-- [ ] No connections[0] hardcoding in renderWire or wire creation
+- [x] All "Must Have" present
+- [x] All "Must NOT Have" absent
+- [x] All tests pass (existing 22 + new tests)
+- [x] 6 examples load correctly with valid circuit state
+- [x] Drag-to-connect wiring works
+- [x] No connections[0] hardcoding in renderWire or wire creation
