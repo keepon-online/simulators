@@ -1,0 +1,2 @@
+167:export interface WiringStep {
+176:  steps?: WiringStep[]

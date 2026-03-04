@@ -27,7 +27,13 @@ export function detectShortCircuit(
 ): FaultDetection | null {
   const resistance = getComponentResistance(component)
   
-  if (resistance > 0 && resistance < SHORT_CIRCUIT_THRESHOLD && component.type !== 'power') {
+  if (
+    resistance > 0
+    && resistance < SHORT_CIRCUIT_THRESHOLD
+    && component.type !== 'power'
+    && component.type !== 'circuit_breaker'
+    && component.type !== 'fuse'
+  ) {
     return {
       type: 'short_circuit',
       componentId: component.id,
@@ -123,7 +129,7 @@ export function detectOpenCircuit(
     return {
       type: 'open_circuit',
       componentId: component.id,
-      message: `断路器 ${component.name} 已跳闸`,
+      message: `保护器件 断路器 ${component.name} 处于跳闸断开状态，请检查负载后复位再送电`,
       severity: 'error',
     }
   }
@@ -132,7 +138,7 @@ export function detectOpenCircuit(
     return {
       type: 'open_circuit',
       componentId: component.id,
-      message: `保险丝 ${component.name} 已熔断`,
+      message: `保护器件 保险丝 ${component.name} 已熔断并断开，请先排查故障后再更换`,
       severity: 'error',
     }
   }

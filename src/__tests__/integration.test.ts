@@ -6,7 +6,7 @@ import {
   addComponent,
   addWire,
 } from '../engine/models'
-import { calculateCircuitState, calculateOhmLaw } from '../engine/calculator'
+import { calculateCircuitState, calculateOhmLaw, calculateComponentValues } from '../engine/calculator'
 import { detectFaults } from '../engine/faultDetector'
 
 describe('集成测试: 完整电路场景', () => {
@@ -246,6 +246,96 @@ describe('集成测试: 完整电路场景', () => {
       expect(heaterValues?.current).toBe(0)
       expect(state.totalCurrent).toBe(0)
       expect(state.totalPower).toBe(0)
+    })
+  })
+
+  describe('场景8: 教学保护器件最小导通语义', () => {
+    it('保护器件闭合时应允许下游导通（calculateComponentValues）', () => {
+      let diagram = createCircuitDiagram('保护器件闭合')
+
+      const power = createComponent('power', '电源', { x: 0, y: 0 })
+      const breaker = createComponent('circuit_breaker', '断路器', { x: 120, y: 0 }, { maxCurrent: 20 })
+      const light = createComponent('light', '灯具', { x: 240, y: 0 }, { power: 60 })
+
+      diagram = addComponent(diagram, power)
+      diagram = addComponent(diagram, breaker)
+      diagram = addComponent(diagram, light)
+
+      diagram = addWire(diagram, createWire(power.id, power.connections[1].id, breaker.id, breaker.connections[0].id))
+      diagram = addWire(diagram, createWire(breaker.id, breaker.connections[1].id, light.id, light.connections[0].id))
+
+      const result = calculateComponentValues(diagram, light.id)
+
+      expect(result).not.toBeNull()
+      expect(result?.values.current ?? 0).toBeGreaterThan(0)
+      expect(result?.values.power ?? 0).toBeGreaterThan(0)
+    })
+
+    it('保护器件断开时下游应无电流（calculateComponentValues）', () => {
+      let diagram = createCircuitDiagram('保护器件断开')
+
+      const power = createComponent('power', '电源', { x: 0, y: 0 })
+      const breaker = createComponent('circuit_breaker', '断路器', { x: 120, y: 0 }, { maxCurrent: 20 })
+      breaker.state.tripped = true
+      const light = createComponent('light', '灯具', { x: 240, y: 0 }, { power: 60 })
+
+      diagram = addComponent(diagram, power)
+      diagram = addComponent(diagram, breaker)
+      diagram = addComponent(diagram, light)
+
+      diagram = addWire(diagram, createWire(power.id, power.connections[1].id, breaker.id, breaker.connections[0].id))
+      diagram = addWire(diagram, createWire(breaker.id, breaker.connections[1].id, light.id, light.connections[0].id))
+
+      const result = calculateComponentValues(diagram, light.id)
+
+      expect(result).not.toBeNull()
+      expect(result?.values.current).toBe(0)
+      expect(result?.values.power).toBe(0)
+    })
+  })
+
+  describe('场景9: faultDetector 保护器件提示语义兼容', () => {
+    it('保护器件断开故障应给出清晰教学提示', () => {
+      let diagram = createCircuitDiagram('保护器件故障提示')
+
+      const power = createComponent('power', '电源', { x: 0, y: 0 })
+      const breaker = createComponent('circuit_breaker', '总断路器', { x: 120, y: 0 }, { maxCurrent: 20 })
+      breaker.state.tripped = true
+      const light = createComponent('light', '灯具', { x: 240, y: 0 }, { power: 60 })
+
+      diagram = addComponent(diagram, power)
+      diagram = addComponent(diagram, breaker)
+      diagram = addComponent(diagram, light)
+
+      diagram = addWire(diagram, createWire(power.id, power.connections[1].id, breaker.id, breaker.connections[0].id))
+      diagram = addWire(diagram, createWire(breaker.id, breaker.connections[1].id, light.id, light.connections[0].id))
+
+      const faults = detectFaults(diagram)
+      const protectionOpenFault = faults.find(f => f.type === 'open_circuit' && f.componentId === breaker.id)
+
+      expect(protectionOpenFault).toBeDefined()
+      expect(protectionOpenFault?.message).toContain('保护器件')
+      expect(protectionOpenFault?.message).toContain('请检查')
+    })
+
+    it('保护器件正常闭合时不应误报开路故障', () => {
+      let diagram = createCircuitDiagram('保护器件正常闭合')
+
+      const power = createComponent('power', '电源', { x: 0, y: 0 })
+      const breaker = createComponent('circuit_breaker', '总断路器', { x: 120, y: 0 }, { maxCurrent: 20 })
+      const light = createComponent('light', '灯具', { x: 240, y: 0 }, { power: 60 })
+
+      diagram = addComponent(diagram, power)
+      diagram = addComponent(diagram, breaker)
+      diagram = addComponent(diagram, light)
+
+      diagram = addWire(diagram, createWire(power.id, power.connections[1].id, breaker.id, breaker.connections[0].id))
+      diagram = addWire(diagram, createWire(breaker.id, breaker.connections[1].id, light.id, light.connections[0].id))
+
+      const faults = detectFaults(diagram)
+      const breakerOpenFaults = faults.filter(f => f.type === 'open_circuit' && f.componentId === breaker.id)
+
+      expect(breakerOpenFaults.length).toBe(0)
     })
   })
 })

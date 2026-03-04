@@ -1,0 +1,9 @@
+console:debug:[vite] connecting...
+console:debug:[vite] connected.
+console:info:%cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+group_配电保护=1
+group_开关照明=1
+group_插座回路=2
+group_常见家电=1
+overlay_after_select=1
+overlay_after_close=0

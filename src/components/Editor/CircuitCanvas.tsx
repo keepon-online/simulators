@@ -13,6 +13,7 @@ import {
 import { calculateCircuitState } from '@/engine/calculator'
 import { detectFaults } from '@/engine/faultDetector'
 import { getComponentColor } from '@/engine/componentParams'
+import { CIRCUIT_EXAMPLES } from '@/data/examples'
 
 interface CircuitCanvasProps {
   diagram: CircuitDiagram
@@ -233,7 +234,12 @@ export function CircuitCanvas({
   const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 })
   const [wiringFrom, setWiringFrom] = useState<{componentId: string, pointId: string, x: number, y: number} | null>(null)
   const [wiringMousePos, setWiringMousePos] = useState<{x: number, y: number} | null>(null)
+  const [showStepsOverlay, setShowStepsOverlay] = useState(false)
   const svgRef = useRef<SVGSVGElement>(null)
+
+  const currentSteps = /^ex[1-8]$/.test(diagram.id)
+    ? (CIRCUIT_EXAMPLES.find((example) => example.diagram.id === diagram.id)?.steps ?? [])
+    : []
   
   const circuitState = calculateCircuitState(diagram)
   const faults = detectFaults(diagram)
@@ -341,6 +347,14 @@ export function CircuitCanvas({
     window.addEventListener('keydown', handleKeyDown)
     return () => window.removeEventListener('keydown', handleKeyDown)
   }, [diagram, selectedComponentId, onDiagramChange, onSelectComponent])
+
+  useEffect(() => {
+    if (/^ex[1-8]$/.test(diagram.id)) {
+      setShowStepsOverlay(true)
+      return
+    }
+    setShowStepsOverlay(false)
+  }, [diagram.id])
   
   const handleDrop = useCallback((e: React.DragEvent) => {
     e.preventDefault()
@@ -368,7 +382,7 @@ export function CircuitCanvas({
   }, [])
   
   return (
-    <div className="w-full h-full overflow-auto bg-gray-50">
+    <div className="relative w-full h-full overflow-auto bg-gray-50">
       <svg
         ref={svgRef}
         width={CANVAS_WIDTH}
@@ -471,6 +485,30 @@ export function CircuitCanvas({
           )
         })}
       </svg>
+
+      {showStepsOverlay && currentSteps.length > 0 && (
+        <div className="absolute right-4 top-4 z-20 w-80 rounded-lg border border-gray-200 bg-white/95 p-4 shadow-lg backdrop-blur">
+          <div className="mb-3 flex items-center justify-between">
+            <h3 className="text-sm font-semibold text-gray-900">接线步骤</h3>
+            <button
+              type="button"
+              aria-label="关闭接线步骤"
+              className="rounded p-1 text-gray-500 transition hover:bg-gray-100 hover:text-gray-700"
+              onClick={() => setShowStepsOverlay(false)}
+            >
+              ✕
+            </button>
+          </div>
+          <ol className="space-y-2 text-sm text-gray-700">
+            {currentSteps.map((item) => (
+              <li key={item.step} className="flex gap-2">
+                <span className="font-semibold text-gray-900">{item.step}.</span>
+                <span>{item.description}</span>
+              </li>
+            ))}
+          </ol>
+        </div>
+      )}
     </div>
   )
 }

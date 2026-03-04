@@ -1,0 +1,6 @@
+30:      expect(lightValues?.power).toBeCloseTo(60, 0)
+31:      expect(circuitState.isValid).toBe(true)
+150:      expect(circuitState.isValid).toBe(true)
+151:      expect(circuitState.totalPower).toBeCloseTo(660, 0)
+225:      expect(state.totalPower).toBe(0)
+248:      expect(state.totalPower).toBe(0)
