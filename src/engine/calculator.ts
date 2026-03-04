@@ -427,6 +427,28 @@ export function calculateComponentValues(
   if (!path) {
     return null
   }
+
+  const hasOpenProtectionOnPath = path.some(pathComponentId => {
+    if (pathComponentId === powerSource.id) {
+      return false
+    }
+
+    const pathComponent = getComponent(diagram, pathComponentId)
+    return pathComponent ? !isComponentConducting(pathComponent) : false
+  })
+
+  if (hasOpenProtectionOnPath) {
+    return {
+      componentId,
+      values: {
+        voltage: 0,
+        current: 0,
+        power: 0,
+        resistance: Infinity,
+      },
+      path,
+    }
+  }
   
   const resistances: number[] = []
   

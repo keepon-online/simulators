@@ -1,4 +1,4 @@
-import type { Component, Wire, CircuitDiagram, ComponentParams, ConnectionPoint } from '../types'
+import type { Component, Wire, CircuitDiagram, ComponentParams, ConnectionPoint, CircuitExampleWithSteps } from '../types'
 import { BASIC_COMPONENT_PARAMS, APPLIANCE_PARAMS } from '../engine/componentParams'
 
 // ============================================================
@@ -78,7 +78,7 @@ const ex1Wires: Wire[] = [
 
 
 // ============================================================
-// 示例 2: 一灯双控（教育简化版：两个开关并联）
+// 示例 2: 双控照明（教育简化版：两个开关并联）
 // 电源 → 断路器 → 两个开关并联 → 灯
 // ============================================================
 
@@ -109,7 +109,7 @@ const ex2Wires: Wire[] = [
 ]
 
 // ============================================================
-// 示例 3: 插座回路
+// 示例 3: 插座回路含保护
 // 电源 → 断路器 → 3 个插座并联
 // ============================================================
 
@@ -138,7 +138,7 @@ const ex3Wires: Wire[] = [
   makeWire('ex3-w4', 'ex3-breaker', 'ex3-breaker-out', 'ex3-outlet3', 'ex3-outlet3-in'),
 ]
 // ============================================================
-// 示例 4: 厨房回路
+// 示例 4: 专线回路
 // 电源 → 独立断路器 → 冰箱 + 热水器并联
 // ============================================================
 const ex4Components: Component[] = [
@@ -303,53 +303,116 @@ function makeDiagram(id: string, name: string, components: Component[], wires: W
 }
 
 export const singleLightSwitch = makeDiagram('ex1', '单灯单控', ex1Components, ex1Wires)
-export const dualSwitchLight = makeDiagram('ex2', '一灯双控', ex2Components, ex2Wires)
-export const outletCircuit = makeDiagram('ex3', '插座回路', ex3Components, ex3Wires)
-export const kitchenCircuit = makeDiagram('ex4', '厨房回路', ex4Components, ex4Wires)
+export const dualSwitchLight = makeDiagram('ex2', '双控照明', ex2Components, ex2Wires)
+export const outletCircuit = makeDiagram('ex3', '插座回路含保护', ex3Components, ex3Wires)
+export const kitchenCircuit = makeDiagram('ex4', '专线回路', ex4Components, ex4Wires)
 export const acDedicatedLine = makeDiagram('ex5', '空调专线', ex5Components, ex5Wires)
 export const wholeHouseDistribution = makeDiagram('ex6', '全屋配电', ex6Components, ex6Wires)
 export const fiveHoleOutletWiring = makeDiagram('ex7', '五孔插座接线', ex7Components, ex7Wires)
 export const dualSwitchWiring = makeDiagram('ex8', '双联双控接线', ex8Components, ex8Wires)
 
-export const CIRCUIT_EXAMPLES: Array<{ name: string; description: string; diagram: CircuitDiagram }> = [
+export const CIRCUIT_EXAMPLES: Array<CircuitExampleWithSteps> = [
   {
     name: '单灯单控',
     description: '最基本的家庭照明回路：电源 → 断路器 → 开关 → 灯',
     diagram: singleLightSwitch,
+    teachingLabel: '基础照明回路',
+    teachingTag: '入门',
+    steps: [
+      { step: 1, description: '连接火线主干：电源(L) → 断路器(L) → 开关(L)。' },
+      { step: 2, description: '连接负载线：开关输出端(L) → 灯具输入端(L)。' },
+      { step: 3, description: '连接零线回路：灯具零线端(N) → 电源零线端(N)。' },
+    ],
   },
   {
-    name: '一灯双控',
-    description: '教育简化版双控照明：两个开关并联控制同一盏灯',
+    name: '双控照明',
+    description: '双控照明教学场景：两个控制点协同控制同一照明负载（教育简化版）',
     diagram: dualSwitchLight,
+    teachingLabel: '双点控制概念',
+    teachingTag: '进阶',
+    steps: [
+      { step: 1, description: '先接火线主干：电源(L) → 断路器(L)。' },
+      { step: 2, description: '将断路器输出并联分到两个开关输入端。' },
+      { step: 3, description: '把两个开关输出分别并到同一灯具火线端(L)。' },
+      { step: 4, description: '补齐零线：灯具零线端(N) → 电源零线端(N)。' },
+    ],
   },
   {
-    name: '插座回路',
-    description: '常见插座回路：断路器保护下的3个并联插座',
+    name: '插座回路含保护',
+    description: '插座回路含保护教学场景：由断路器保护的3个并联插座支路',
     diagram: outletCircuit,
+    teachingLabel: '并联负载分配',
+    teachingTag: '入门',
+    steps: [
+      { step: 1, description: '连接电源到断路器：电源(L) → 断路器(L)。' },
+      { step: 2, description: '从断路器输出并联分支到插座1火线端。' },
+      { step: 3, description: '继续并联分支到插座2与插座3火线端。' },
+      { step: 4, description: '检查各插座零线端已形成回路到电源零线端(N)。' },
+    ],
   },
   {
-    name: '厨房回路',
-    description: '厨房大功率电器回路：冰箱和热水器并联',
+    name: '专线回路',
+    description: '专线回路教学场景：独立断路器下接入大功率负载支路（冰箱与热水器）',
     diagram: kitchenCircuit,
+    teachingLabel: '大功率并联回路',
+    teachingTag: '安全重点',
+    steps: [
+      { step: 1, description: '连接火线主干：电源(L) → 厨房断路器(L)。' },
+      { step: 2, description: '断路器输出第一支路接到冰箱输入端(L)。' },
+      { step: 3, description: '断路器输出第二支路接到热水器输入端(L)。' },
+      { step: 4, description: '确认两台电器零线端(N)都回到电源零线侧。' },
+    ],
   },
   {
     name: '空调专线',
     description: '空调独立回路：25A断路器保护的大功率专线',
     diagram: acDedicatedLine,
+    teachingLabel: '专线保护',
+    teachingTag: '安全重点',
+    steps: [
+      { step: 1, description: '连接电源火线到 25A 断路器输入端。' },
+      { step: 2, description: '连接断路器输出到空调火线输入端(L)。' },
+      { step: 3, description: '连接空调零线端(N)回到电源零线端。' },
+    ],
   },
   {
     name: '全屋配电',
     description: '完整家庭配电系统：总断路器下分照明、插座、空调、厨房4个分支',
     diagram: wholeHouseDistribution,
+    teachingLabel: '分级配电结构',
+    teachingTag: '综合',
+    steps: [
+      { step: 1, description: '连接总主干：总电源(L) → 总断路器(L)。' },
+      { step: 2, description: '从总断路器输出分出照明支路：开关 → 客厅灯。' },
+      { step: 3, description: '从总断路器输出分出插座支路：插座1、2、3并联。' },
+      { step: 4, description: '从总断路器输出分出空调与厨房支路：空调、冰箱、热水器。' },
+      { step: 5, description: '统一核对各支路零线回路连续且无遗漏。' },
+    ],
   },
   {
     name: '五孔插座接线',
     description: '五孔插座的标准接线：火线L、零线N、地线E的正确接法',
     diagram: fiveHoleOutletWiring,
+    teachingLabel: '插座端子识别',
+    teachingTag: '规范',
+    steps: [
+      { step: 1, description: '连接火线：电源(L) → 断路器(L) → 五孔插座 L 端。' },
+      { step: 2, description: '连接零线：电源(N) 应接至五孔插座 N 端。' },
+      { step: 3, description: '连接地线：五孔插座 E 端应接地线端子。' },
+      { step: 4, description: '教学提示：本示例导线仅显式展示火线连接路径。' },
+    ],
   },
   {
     name: '双联双控接线',
     description: '双联双控开关接线：一个开关面板控制两盏灯的独立开关',
     diagram: dualSwitchWiring,
+    teachingLabel: '双回路独立控制',
+    teachingTag: '进阶',
+    steps: [
+      { step: 1, description: '连接火线主干：电源(L) → 断路器(L)。' },
+      { step: 2, description: '从断路器输出分别接到双联开关 L1/L2 输入端。' },
+      { step: 3, description: '双联开关 L1 输出接灯1火线端，L2 输出接灯2火线端。' },
+      { step: 4, description: '分别补齐灯1、灯2零线端(N)回到电源零线端。' },
+    ],
   },
 ]

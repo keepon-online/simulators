@@ -5,6 +5,7 @@ interface ComponentItem {
   type: ComponentType
   name: string
   icon: React.ReactNode
+  tag?: string
 }
 
 const basicComponents: ComponentItem[] = [
@@ -151,6 +152,37 @@ export function Sidebar({ onDragStart }: SidebarProps) {
     onDragStart?.(type)
   }
 
+  const sections: Array<{ title: string; items: ComponentItem[]; hoverClass: string; iconClass: string }> = [
+    {
+      title: '配电保护',
+      items: basicComponents
+        .filter((item) => ['power', 'circuit_breaker', 'fuse', 'wire'].includes(item.type))
+        .map((item) => (item.type === 'circuit_breaker' ? { ...item, tag: 'C16' } : item)),
+      hoverClass: 'hover:border-circuit-switch',
+      iconClass: 'text-circuit-switch',
+    },
+    {
+      title: '开关照明',
+      items: basicComponents.filter((item) => ['switch', 'dual_switch', 'light'].includes(item.type)),
+      hoverClass: 'hover:border-circuit-switch',
+      iconClass: 'text-circuit-switch',
+    },
+    {
+      title: '插座回路',
+      items: basicComponents
+        .filter((item) => ['outlet', 'outlet_5hole'].includes(item.type))
+        .map((item) => (item.type === 'outlet_5hole' ? { ...item, tag: '30mA' } : item)),
+      hoverClass: 'hover:border-circuit-switch',
+      iconClass: 'text-circuit-switch',
+    },
+    {
+      title: '常见家电',
+      items: applianceComponents,
+      hoverClass: 'hover:border-circuit-light',
+      iconClass: 'text-circuit-light',
+    },
+  ]
+
   return (
     <aside className="w-56 bg-gray-50 border-r border-gray-200 flex flex-col h-full">
       <div className="p-3 border-b border-gray-200">
@@ -158,39 +190,25 @@ export function Sidebar({ onDragStart }: SidebarProps) {
       </div>
       
       <div className="flex-1 overflow-y-auto">
-        <div className="p-3">
-          <h3 className="text-xs font-medium text-gray-500 uppercase mb-2">基础元件</h3>
-          <div className="grid grid-cols-2 gap-2">
-            {basicComponents.map((item) => (
-              <div
-                key={item.type}
-                draggable
-                onDragStart={(e) => handleDragStart(e, item.type)}
-                className="flex flex-col items-center p-2 bg-white rounded-lg border border-gray-200 cursor-move hover:border-circuit-switch hover:shadow-sm transition-all"
-              >
-                <div className="text-circuit-switch mb-1">{item.icon}</div>
-                <span className="text-xs text-gray-600">{item.name}</span>
-              </div>
-            ))}
+        {sections.map((section, index) => (
+          <div key={section.title} className={index === 0 ? 'p-3' : 'p-3 pt-0'}>
+            <h3 className="text-xs font-medium text-gray-500 uppercase mb-2">{section.title}</h3>
+            <div className="grid grid-cols-2 gap-2">
+              {section.items.map((item) => (
+                <div
+                  key={item.type}
+                  draggable
+                  onDragStart={(e) => handleDragStart(e, item.type)}
+                  className={`flex flex-col items-center p-2 bg-white rounded-lg border border-gray-200 cursor-move ${section.hoverClass} hover:shadow-sm transition-all`}
+                >
+                  <div className={`${section.iconClass} mb-1`}>{item.icon}</div>
+                  <span className="text-xs text-gray-600 leading-tight text-center">{item.name}</span>
+                  {item.tag ? <span className="text-[10px] text-gray-500 mt-0.5">{item.tag}</span> : null}
+                </div>
+              ))}
+            </div>
           </div>
-        </div>
-        
-        <div className="p-3 pt-0">
-          <h3 className="text-xs font-medium text-gray-500 uppercase mb-2">电器负载</h3>
-          <div className="grid grid-cols-2 gap-2">
-            {applianceComponents.map((item) => (
-              <div
-                key={item.type}
-                draggable
-                onDragStart={(e) => handleDragStart(e, item.type)}
-                className="flex flex-col items-center p-2 bg-white rounded-lg border border-gray-200 cursor-move hover:border-circuit-light hover:shadow-sm transition-all"
-              >
-                <div className="text-circuit-light mb-1">{item.icon}</div>
-                <span className="text-xs text-gray-600">{item.name}</span>
-              </div>
-            ))}
-          </div>
-        </div>
+        ))}
       </div>
     </aside>
   )

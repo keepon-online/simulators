@@ -163,3 +163,17 @@ export interface LoadAnalysis {
   capacity: number            // 额定容量 (通常是断路器最大电流)
   usage: number                // 使用率 (%)
 }
+
+export interface WiringStep {
+  step: number
+  description: string
+}
+
+export interface CircuitExampleWithSteps {
+  name: string
+  description: string
+  diagram: CircuitDiagram
+  steps?: WiringStep[]
+  teachingLabel?: string
+  teachingTag?: string
+}

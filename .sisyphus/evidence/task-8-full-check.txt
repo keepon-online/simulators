@@ -1,0 +1,29 @@
+$ vitest --run
+
+[1m[46m RUN [49m[22m [36mv4.0.18 [39m[90m/home/top/project/web/simulators[39m
+
+ [32m✓[39m src/__tests__/example.test.ts [2m([22m[2m1 test[22m[2m)[22m[32m 6[2mms[22m[39m
+ [32m✓[39m src/__tests__/circuit-canvas-overlay.test.tsx [2m([22m[2m3 tests[22m[2m)[22m[32m 8[2mms[22m[39m
+ [32m✓[39m src/__tests__/models.test.ts [2m([22m[2m24 tests[22m[2m)[22m[32m 26[2mms[22m[39m
+ [32m✓[39m src/__tests__/parser.test.ts [2m([22m[2m7 tests[22m[2m)[22m[32m 14[2mms[22m[39m
+ [32m✓[39m src/__tests__/examples.test.ts [2m([22m[2m17 tests[22m[2m)[22m[32m 20[2mms[22m[39m
+ [32m✓[39m src/__tests__/integration.test.ts [2m([22m[2m17 tests[22m[2m)[22m[32m 25[2mms[22m[39m
+ [32m✓[39m src/__tests__/sidebar.test.tsx [2m([22m[2m1 test[22m[2m)[22m[32m 23[2mms[22m[39m
+ [32m✓[39m src/__tests__/app-storage.test.tsx [2m([22m[2m4 tests[22m[2m)[22m[33m 468[2mms[22m[39m
+
+[2m Test Files [22m [1m[32m8 passed[39m[22m[90m (8)[39m
+[2m      Tests [22m [1m[32m74 passed[39m[22m[90m (74)[39m
+[2m   Start at [22m 16:36:04
+[2m   Duration [22m 2.71s[2m (transform 1.61s, setup 0ms, import 2.25s, tests 587ms, environment 11.62s)[22m
+
+$ tsc -b && vite build
+vite v7.3.1 building client environment for production...
+transforming...
+✓ 42 modules transformed.
+rendering chunks...
+computing gzip size...
+dist/index.html                   0.54 kB │ gzip:  0.32 kB
+dist/assets/index-BuKOsqBr.css   16.24 kB │ gzip:  4.12 kB
+dist/assets/vendor-C6qNFpnO.js   11.07 kB │ gzip:  3.90 kB
+dist/assets/index-BrtEQBGt.js   224.50 kB │ gzip: 69.70 kB
+✓ built in 3.64s
