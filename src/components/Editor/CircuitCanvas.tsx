@@ -48,7 +48,7 @@ function renderComponent(component: Component, isSelected: boolean, values?: { c
         </g>
       )
       
-    case 'switch':
+    case 'switch': {
       const isOn = state.isOn
       return (
         <g key={component.id} {...commonProps}>
@@ -58,6 +58,7 @@ function renderComponent(component: Component, isSelected: boolean, values?: { c
           <text x={x + 25} y={y + 42} textAnchor="middle" fill="#6b7280" fontSize={8}>{name}</text>
         </g>
       )
+    }
       
     case 'dual_switch': {
       const isOn1 = state.isOn
@@ -77,7 +78,7 @@ function renderComponent(component: Component, isSelected: boolean, values?: { c
         </g>
       )
     }
-    case 'light':
+    case 'light': {
       const isLit = state.isOn && values && values.current > 0
       return (
         <g key={component.id} {...commonProps}>
@@ -86,6 +87,7 @@ function renderComponent(component: Component, isSelected: boolean, values?: { c
           <text x={x + 25} y={y + 50} textAnchor="middle" fill="#6b7280" fontSize={8}>{name}</text>
         </g>
       )
+    }
       
     case 'outlet':
       return (
@@ -109,7 +111,7 @@ function renderComponent(component: Component, isSelected: boolean, values?: { c
           <text x={x + 25} y={y + 55} textAnchor="middle" fill="#6b7280" fontSize={8}>{name}</text>
         </g>
       )
-    case 'circuit_breaker':
+    case 'circuit_breaker': {
       const isTripped = state.tripped
       return (
         <g key={component.id} {...commonProps}>
@@ -119,8 +121,9 @@ function renderComponent(component: Component, isSelected: boolean, values?: { c
           <text x={x + 25} y={y + 45} textAnchor="middle" fill="#6b7280" fontSize={8}>{name}</text>
         </g>
       )
+    }
       
-    case 'fuse':
+    case 'fuse': {
       const isBlown = state.blown
       return (
         <g key={component.id} {...commonProps}>
@@ -129,12 +132,13 @@ function renderComponent(component: Component, isSelected: boolean, values?: { c
           <text x={x + 25} y={y + 35} textAnchor="middle" fill="#6b7280" fontSize={8}>{name}</text>
         </g>
       )
+    }
       
     case 'refrigerator':
     case 'air_conditioner':
     case 'tv':
     case 'washer':
-    case 'water_heater':
+    case 'water_heater': {
       const iconMap: Record<string, string> = {
         refrigerator: '🧊',
         air_conditioner: '❄️',
@@ -149,6 +153,7 @@ function renderComponent(component: Component, isSelected: boolean, values?: { c
           <text x={x + 30} y={y + 65} textAnchor="middle" fill="#6b7280" fontSize={8}>{name}</text>
         </g>
       )
+    }
       
     default:
       return (

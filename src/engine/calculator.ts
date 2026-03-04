@@ -125,6 +125,25 @@ interface AdjacencyList {
   [componentId: string]: string[]
 }
 
+type ComponentTree = Map<string, string[]>
+
+const NON_LOAD_COMPONENT_TYPES = new Set<Component['type']>([
+  'power',
+  'switch',
+  'dual_switch',
+  'circuit_breaker',
+  'fuse',
+  'wire',
+])
+
+function isLoadComponent(component: Component): boolean {
+  return !NON_LOAD_COMPONENT_TYPES.has(component.type)
+}
+
+function isPositiveFiniteResistance(resistance: number): boolean {
+  return Number.isFinite(resistance) && resistance > 0
+}
+
 function buildAdjacencyList(diagram: CircuitDiagram): AdjacencyList {
   const adjacencyList: AdjacencyList = {}
   
@@ -145,30 +164,91 @@ function buildAdjacencyList(diagram: CircuitDiagram): AdjacencyList {
   return adjacencyList
 }
 
+function buildConductingTree(
+  powerSourceId: string,
+  adjacencyList: AdjacencyList,
+  componentMap: Map<string, Component>
+): ComponentTree {
+  const tree: ComponentTree = new Map()
+  const visited = new Set<string>([powerSourceId])
+  const queue: string[] = [powerSourceId]
+
+  while (queue.length > 0) {
+    const currentId = queue.shift() as string
+    const neighbors = adjacencyList[currentId] || []
+    const children: string[] = []
+
+    neighbors.forEach(neighborId => {
+      if (visited.has(neighborId)) {
+        return
+      }
+
+      const neighbor = componentMap.get(neighborId)
+      if (!neighbor) {
+        return
+      }
+
+      if (!isComponentConducting(neighbor)) {
+        return
+      }
+
+      visited.add(neighborId)
+      children.push(neighborId)
+      queue.push(neighborId)
+    })
+
+    tree.set(currentId, children)
+  }
+
+  return tree
+}
+
 // 使用BFS查找从电源到目标元件的路径
 function findPath(
   adjacencyList: AdjacencyList,
   startId: string,
-  endId: string,
-  visited: Set<string> = new Set()
+  endId: string
 ): string[] | null {
   if (startId === endId) {
     return [startId]
   }
-  
-  visited.add(startId)
-  
-  const neighbors = adjacencyList[startId] || []
-  
-  for (const neighbor of neighbors) {
-    if (!visited.has(neighbor)) {
-      const path = findPath(adjacencyList, neighbor, endId, visited)
-      if (path) {
-        return [startId, ...path]
+
+  const queue: string[] = [startId]
+  const visited = new Set<string>([startId])
+  const parentMap = new Map<string, string>()
+
+  while (queue.length > 0) {
+    const currentId = queue.shift() as string
+    const neighbors = adjacencyList[currentId] || []
+
+    for (const neighborId of neighbors) {
+      if (visited.has(neighborId)) {
+        continue
       }
+
+      visited.add(neighborId)
+      parentMap.set(neighborId, currentId)
+
+      if (neighborId === endId) {
+        const path: string[] = [endId]
+        let cursor = endId
+
+        while (cursor !== startId) {
+          const parent = parentMap.get(cursor)
+          if (!parent) {
+            break
+          }
+          path.unshift(parent)
+          cursor = parent
+        }
+
+        return path
+      }
+
+      queue.push(neighborId)
     }
   }
-  
+
   return null
 }
 
@@ -193,44 +273,132 @@ export function calculateCircuitState(diagram: CircuitDiagram): CircuitState {
       isValid: false,
     }
   }
-  
-  const loadComponents = diagram.components.filter(c => 
-    c.type !== 'power' && 
-    c.type !== 'switch' && 
-    c.type !== 'circuit_breaker' &&
-    c.type !== 'fuse' &&
-    c.type !== 'wire'
+
+  const componentMap = new Map<string, Component>(
+    diagram.components.map(component => [component.id, component])
   )
-  
-  let totalCurrent = 0
-  let totalPower = 0
-  
-  loadComponents.forEach(component => {
-    if (!isComponentConducting(component)) {
-      electricalValues.set(component.id, {
-        voltage: 0,
-        current: 0,
-        power: 0,
-        resistance: Infinity,
-      })
+  const adjacencyList = buildAdjacencyList(diagram)
+  const conductingTree = buildConductingTree(powerSource.id, adjacencyList, componentMap)
+
+  diagram.components.forEach(component => {
+    const conducting = component.id === powerSource.id || isComponentConducting(component)
+    const resistance = conducting ? getComponentResistance(component) : Infinity
+
+    electricalValues.set(component.id, {
+      voltage: 0,
+      current: 0,
+      power: 0,
+      resistance,
+    })
+  })
+
+  const equivalentResistanceCache = new Map<string, number>()
+
+  const calculateEquivalentResistance = (componentId: string): number => {
+    const cached = equivalentResistanceCache.get(componentId)
+    if (cached !== undefined) {
+      return cached
+    }
+
+    const component = componentMap.get(componentId)
+    if (!component) {
+      equivalentResistanceCache.set(componentId, Infinity)
+      return Infinity
+    }
+
+    const ownResistance = component.type === 'power' ? 0 : getComponentResistance(component)
+    const childIds = conductingTree.get(componentId) || []
+
+    if (childIds.length === 0) {
+      const leafResistance = isLoadComponent(component) ? ownResistance : Infinity
+      equivalentResistanceCache.set(componentId, leafResistance)
+      return leafResistance
+    }
+
+    const childEquivalentResistances = childIds
+      .map(childId => calculateEquivalentResistance(childId))
+      .filter(isPositiveFiniteResistance)
+
+    if (childEquivalentResistances.length === 0) {
+      equivalentResistanceCache.set(componentId, Infinity)
+      return Infinity
+    }
+
+    const downstreamResistance = childEquivalentResistances.length === 1
+      ? childEquivalentResistances[0]
+      : calculateParallelResistance(childEquivalentResistances)
+
+    const equivalentResistance = ownResistance + downstreamResistance
+    equivalentResistanceCache.set(componentId, equivalentResistance)
+    return equivalentResistance
+  }
+
+  const totalEquivalentResistance = calculateEquivalentResistance(powerSource.id)
+  const totalCurrent = isPositiveFiniteResistance(totalEquivalentResistance)
+    ? HOUSEHOLD_VOLTAGE / totalEquivalentResistance
+    : 0
+
+  const distributeCurrent = (componentId: string, componentCurrent: number) => {
+    const component = componentMap.get(componentId)
+    if (!component) {
       return
     }
-    
-    const resistance = getComponentResistance(component)
-    const values = calculateOhmLaw(HOUSEHOLD_VOLTAGE, resistance)
-    electricalValues.set(component.id, values)
-    
-    totalCurrent += values.current
-    totalPower += values.power
-  })
-  
-  const powerValues = {
-    voltage: HOUSEHOLD_VOLTAGE,
-    current: totalCurrent,
-    power: totalPower,
-    resistance: totalCurrent > 0 ? HOUSEHOLD_VOLTAGE / totalCurrent : Infinity,
+
+    if (component.type === 'power') {
+      electricalValues.set(componentId, {
+        voltage: HOUSEHOLD_VOLTAGE,
+        current: componentCurrent,
+        power: HOUSEHOLD_VOLTAGE * componentCurrent,
+        resistance: totalEquivalentResistance,
+      })
+    } else {
+      const componentResistance = getComponentResistance(component)
+      const voltage = isPositiveFiniteResistance(componentResistance)
+        ? componentCurrent * componentResistance
+        : 0
+      electricalValues.set(componentId, {
+        voltage,
+        current: componentCurrent,
+        power: voltage * componentCurrent,
+        resistance: componentResistance,
+      })
+    }
+
+    const childIds = conductingTree.get(componentId) || []
+    if (childIds.length === 0 || componentCurrent <= 0) {
+      return
+    }
+
+    const branchResistances = childIds
+      .map(childId => ({
+        childId,
+        resistance: equivalentResistanceCache.get(childId) ?? Infinity,
+      }))
+      .filter(branch => isPositiveFiniteResistance(branch.resistance))
+
+    if (branchResistances.length === 0) {
+      return
+    }
+
+    if (branchResistances.length === 1) {
+      distributeCurrent(branchResistances[0].childId, componentCurrent)
+      return
+    }
+
+    const totalConductance = branchResistances.reduce(
+      (sum, branch) => sum + 1 / branch.resistance,
+      0
+    )
+
+    branchResistances.forEach(branch => {
+      const branchCurrent = componentCurrent * ((1 / branch.resistance) / totalConductance)
+      distributeCurrent(branch.childId, branchCurrent)
+    })
   }
-  electricalValues.set(powerSource.id, powerValues)
+
+  distributeCurrent(powerSource.id, totalCurrent)
+
+  const totalPower = electricalValues.get(powerSource.id)?.power ?? 0
   
   return {
     diagram,

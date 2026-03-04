@@ -4,7 +4,7 @@
 
 ## 技术栈
 
-- React 18 + TypeScript
+- React 19 + TypeScript
 - Vite (构建工具)
 - Tailwind CSS (样式)
 - Vitest (测试框架)
@@ -39,8 +39,8 @@ bun test
 ```
 src/
 ├── components/     # React 组件
+├── data/           # 示例电路数据
 ├── engine/        # 电路计算引擎
 ├── types/         # TypeScript 类型定义
-├── utils/         # 工具函数
 └── __tests__/    # 测试文件
 ```
