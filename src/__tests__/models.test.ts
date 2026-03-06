@@ -1,4 +1,5 @@
 import { describe, it, expect } from 'vitest'
+import type { Wire } from '../types'
 import {
   createComponent,
   createCircuitDiagram,
@@ -209,5 +210,43 @@ describe('dual_switch toggle', () => {
     expect(d1.components[0].state.isOn2).toBe(true)
     const d2 = toggleSwitch(d1, comp.id, 2)
     expect(d2.components[0].state.isOn2).toBe(false)
+  })
+})
+
+describe('Wire lineType', () => {
+  it('should include lineType on Wire interface', () => {
+    const wire: Wire = {
+      id: 'test-w1',
+      from: { componentId: 'c1', pointId: 'p1' },
+      to: { componentId: 'c2', pointId: 'p2' },
+      lineType: 'L',
+    }
+    expect(wire.lineType).toBe('L')
+  })
+
+  it('should allow N and E lineTypes', () => {
+    const wireN: Wire = {
+      id: 'test-w2',
+      from: { componentId: 'c1', pointId: 'p1' },
+      to: { componentId: 'c2', pointId: 'p2' },
+      lineType: 'N',
+    }
+    const wireE: Wire = {
+      id: 'test-w3',
+      from: { componentId: 'c1', pointId: 'p1' },
+      to: { componentId: 'c2', pointId: 'p2' },
+      lineType: 'E',
+    }
+    expect(wireN.lineType).toBe('N')
+    expect(wireE.lineType).toBe('E')
+  })
+
+  it('should allow undefined lineType for backward compat', () => {
+    const wire: Wire = {
+      id: 'test-w4',
+      from: { componentId: 'c1', pointId: 'p1' },
+      to: { componentId: 'c2', pointId: 'p2' },
+    }
+    expect(wire.lineType).toBeUndefined()
   })
 })

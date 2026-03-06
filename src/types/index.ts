@@ -101,6 +101,7 @@ export interface Wire {
     pointId: string
   }
   points?: { x: number; y: number }[] // 拐点
+  lineType?: 'L' | 'N' | 'E'
 }
 
 // 电路图
@@ -119,6 +120,7 @@ export type FaultType =
   | 'overload'        // 过载
   | 'open_circuit'    // 开路/断路
   | 'ground_fault'    // 接地故障
+  | 'neutral_open'    // 零线断路
 
 // 故障检测结果
 export interface FaultDetection {
@@ -126,6 +128,8 @@ export interface FaultDetection {
   componentId?: string
   message: string
   severity: 'warning' | 'error' | 'critical'
+  suggestion?: string
+  code?: string
 }
 
 // 电路状态
