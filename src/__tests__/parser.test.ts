@@ -93,6 +93,31 @@ describe('Circuit Parser', () => {
     expect(result.warnings.some(w => w.includes('兼容模式'))).toBe(true)
   })
 
+  it('should load circuits saved without wire lineType', () => {
+    const power = createComponent('power', '电源', { x: 0, y: 0 })
+    const light = createComponent('light', '灯具', { x: 120, y: 0 }, { power: 60 })
+    const data = {
+      schema: 'home-circuit-simulator',
+      version: STORAGE_SCHEMA_VERSION,
+      savedAt: '2026-01-01T00:00:00Z',
+      diagram: {
+        id: 'old-1',
+        name: 'Old Circuit',
+        components: [power, light],
+        wires: [{
+          id: 'w1',
+          from: { componentId: power.id, pointId: power.connections[1].id },
+          to: { componentId: light.id, pointId: light.connections[0].id },
+        }],
+        createdAt: '2026-01-01',
+        updatedAt: '2026-01-01',
+      },
+    }
+    const result = importCircuitFromJSON(JSON.stringify(data))
+    expect(result.success).toBe(true)
+    expect(result.diagram?.wires[0].lineType).toBeUndefined()
+  })
+
   it('should reject future storage version', () => {
     const diagram = createCircuitDiagram('Future Version')
     const payload = {
