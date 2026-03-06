@@ -42,4 +42,13 @@ describe('CircuitCanvas 接线步骤浮层实现', () => {
     expect(source).toContain("(e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'z' && !e.shiftKey")
     expect(source).toContain('setWireUndoStack([])')
   })
+
+  it('保留核心元器件的独立渲染入口分支', () => {
+    expect(source).toContain("case 'power'")
+    expect(source).toContain("case 'switch'")
+    expect(source).toContain("case 'circuit_breaker'")
+    expect(source).toContain("case 'light'")
+    expect(source).toContain("case 'outlet'")
+    expect(source).toContain("case 'outlet_5hole'")
+  })
 })
