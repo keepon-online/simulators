@@ -20,6 +20,29 @@ export const DEFAULT_FUSE_RATING = 10
 // 过载阈值 (超过额定电流的百分比)
 export const OVERLOAD_THRESHOLD = 1.2
 
+function getFaultSuggestion(fault: FaultDetection): string {
+  switch (fault.type) {
+    case 'short_circuit':
+      return '立即断电并检查短路点，排除导线或端子短接后再复位送电。'
+    case 'overload':
+      return '降低同时运行负载，确认额定电流匹配后再恢复运行。'
+    case 'open_circuit':
+      return '检查开关/保护器件状态与接线连续性，修复后重新上电验证。'
+    case 'neutral_open':
+      return '检查零线(N)是否正确连接到电源零线端，确保回路完整。'
+    default:
+      return '请检查该回路连接与元件状态，按步骤排查后重试。'
+  }
+}
+
+function withFaultMeta(fault: FaultDetection): FaultDetection {
+  return {
+    ...fault,
+    suggestion: fault.suggestion ?? getFaultSuggestion(fault),
+    code: fault.code ?? `FAULT_${fault.type.toUpperCase()}`,
+  }
+}
+
 // 检测短路故障
 export function detectShortCircuit(
   component: Component,
@@ -162,6 +185,35 @@ export function detectOpenCircuit(
   return null
 }
 
+// 检测零线断路故障
+export function detectNeutralOpen(
+  diagram: CircuitDiagram,
+  component: Component
+): FaultDetection | null {
+  const loadTypes = ['light', 'outlet', 'outlet_5hole', 'resistor',
+    'refrigerator', 'air_conditioner', 'tv', 'washer', 'water_heater']
+  if (!loadTypes.includes(component.type)) return null
+
+  const hasAnyLineType = diagram.wires.some(w => w.lineType !== undefined)
+  if (!hasAnyLineType) return null
+
+  const nPort = component.connections.find(c => c.label === 'N')
+  if (!nPort) return null
+
+  const hasNWire = diagram.wires.some(w =>
+    (w.from.componentId === component.id && w.from.pointId === nPort.id) ||
+    (w.to.componentId === component.id && w.to.pointId === nPort.id)
+  )
+  if (hasNWire) return null
+
+  return {
+    type: 'neutral_open',
+    componentId: component.id,
+    message: `元件 ${component.name} 零线(N)未接通，电路回路不完整`,
+    severity: 'warning',
+  }
+}
+
 // 主故障检测函数
 export function detectFaults(diagram: CircuitDiagram): FaultDetection[] {
   const faults: FaultDetection[] = []
@@ -175,19 +227,24 @@ export function detectFaults(diagram: CircuitDiagram): FaultDetection[] {
     
     const shortCircuit = detectShortCircuit(component, values)
     if (shortCircuit) {
-      faults.push(shortCircuit)
+      faults.push(withFaultMeta(shortCircuit))
       return
     }
     
     const overload = detectOverload(component, values, circuitState)
     if (overload) {
-      faults.push(overload)
+      faults.push(withFaultMeta(overload))
       return
     }
     
     const openCircuit = detectOpenCircuit(diagram, component)
     if (openCircuit) {
-      faults.push(openCircuit)
+      faults.push(withFaultMeta(openCircuit))
+    }
+
+    const neutralOpen = detectNeutralOpen(diagram, component)
+    if (neutralOpen) {
+      faults.push(withFaultMeta(neutralOpen))
     }
   })
   

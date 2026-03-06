@@ -8,6 +8,7 @@ import {
 } from '../engine/models'
 import { calculateCircuitState, calculateOhmLaw, calculateComponentValues } from '../engine/calculator'
 import { detectFaults } from '../engine/faultDetector'
+import type { Wire, CircuitDiagram } from '../types'
 
 describe('集成测试: 完整电路场景', () => {
   describe('场景1: 简单串联电路', () => {
@@ -56,6 +57,7 @@ describe('集成测试: 完整电路场景', () => {
       const faults = detectFaults(diagram)
       const overloadFaults = faults.filter(f => f.type === 'overload')
       expect(overloadFaults.length).toBeGreaterThan(0)
+      expect(overloadFaults.some(f => (f.suggestion ?? '').trim().length > 0)).toBe(true)
     })
   })
   
@@ -78,6 +80,7 @@ describe('集成测试: 完整电路场景', () => {
       const faults = detectFaults(diagram)
       const shortFaults = faults.filter(f => f.type === 'short_circuit')
       expect(shortFaults.length).toBeGreaterThan(0)
+      expect(shortFaults.some(f => (f.suggestion ?? '').trim().length > 0)).toBe(true)
     })
   })
   
@@ -94,6 +97,7 @@ describe('集成测试: 完整电路场景', () => {
       const faults = detectFaults(diagram)
       const openFaults = faults.filter(f => f.type === 'open_circuit')
       expect(openFaults.length).toBeGreaterThan(0)
+      expect(openFaults.some(f => (f.suggestion ?? '').trim().length > 0)).toBe(true)
     })
     
     it('无电源时应该报错', () => {
@@ -336,6 +340,199 @@ describe('集成测试: 完整电路场景', () => {
       const breakerOpenFaults = faults.filter(f => f.type === 'open_circuit' && f.componentId === breaker.id)
 
       expect(breakerOpenFaults.length).toBe(0)
+    })
+  })
+
+  describe('场景10: 故障提示增强断言', () => {
+    it('故障结果应按 critical > error > warning 排序', () => {
+      let diagram = createCircuitDiagram('故障排序测试')
+
+      const power = createComponent('power', '电源', { x: 0, y: 0 })
+      const breaker = createComponent('circuit_breaker', '断路器', { x: 100, y: 0 }, { maxCurrent: 1 })
+      const ac = createComponent('air_conditioner', '空调负载', { x: 220, y: 0 }, { power: 3000 })
+      const short = createComponent('resistor', '短路电阻', { x: 200, y: 0 }, { resistance: 0.01 })
+      const unconnectedLight = createComponent('light', '未接线灯具', { x: 320, y: 0 })
+
+      diagram = addComponent(diagram, power)
+      diagram = addComponent(diagram, breaker)
+      diagram = addComponent(diagram, ac)
+      diagram = addComponent(diagram, short)
+      diagram = addComponent(diagram, unconnectedLight)
+
+      diagram = addWire(diagram, createWire(power.id, power.connections[1].id, breaker.id, breaker.connections[0].id))
+      diagram = addWire(diagram, createWire(breaker.id, breaker.connections[1].id, ac.id, ac.connections[0].id))
+      diagram = addWire(diagram, createWire(power.id, power.connections[1].id, short.id, short.connections[0].id))
+
+      const faults = detectFaults(diagram)
+      const severityRank: Record<string, number> = { critical: 0, error: 1, warning: 2 }
+
+      expect(faults.length).toBeGreaterThan(1)
+
+      for (let i = 1; i < faults.length; i += 1) {
+        const previous = severityRank[faults[i - 1].severity]
+        const current = severityRank[faults[i].severity]
+        expect(previous).toBeLessThanOrEqual(current)
+      }
+    })
+
+    it('未知故障类型在缺少建议时应使用兜底建议文案', () => {
+      const unknownFault: {
+        type: 'ground_fault'
+        componentId: string
+        message: string
+        severity: 'warning'
+        suggestion?: string
+      } = {
+        type: 'ground_fault',
+        componentId: 'unknown-component',
+        message: '未知故障',
+        severity: 'warning',
+      }
+
+      const suggestion = unknownFault.suggestion ?? '请检查该回路连接与元件状态，按步骤排查后重试。'
+      expect(suggestion).toBe('请检查该回路连接与元件状态，按步骤排查后重试。')
+    })
+  })
+
+  describe('场景11: L-path 邻接表过滤', () => {
+    function buildTestDiagramWithLN() {
+      const power = createComponent('power', '电源', { x: 0, y: 0 })
+      const breaker = createComponent('circuit_breaker', '断路器', { x: 100, y: 0 })
+      const light = createComponent('light', '灯', { x: 200, y: 0 }, { power: 60 })
+
+      const pL = power.connections.find(c => c.label === 'L')!
+      const pN = power.connections.find(c => c.label === 'N')!
+      const bIn = breaker.connections[0]
+      const bOut = breaker.connections[1]
+      const lL = light.connections.find(c => c.label === 'L')!
+      const lN = light.connections.find(c => c.label === 'N')!
+
+      const wires: Wire[] = [
+        { id: 'w1', from: { componentId: power.id, pointId: pL.id }, to: { componentId: breaker.id, pointId: bIn.id }, lineType: 'L' },
+        { id: 'w2', from: { componentId: breaker.id, pointId: bOut.id }, to: { componentId: light.id, pointId: lL.id }, lineType: 'L' },
+        { id: 'w3', from: { componentId: light.id, pointId: lN.id }, to: { componentId: power.id, pointId: pN.id }, lineType: 'N' },
+      ]
+
+      const diagram: CircuitDiagram = {
+        id: 'test-ln',
+        name: 'Test LN',
+        components: [power, breaker, light],
+        wires,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      }
+      return { diagram, light }
+    }
+
+    function buildTestDiagramOldStyle() {
+      let diagram = createCircuitDiagram('Old Style')
+      const power = createComponent('power', '电源', { x: 0, y: 0 })
+      const light = createComponent('light', '灯', { x: 200, y: 0 }, { power: 60 })
+      diagram = addComponent(diagram, power)
+      diagram = addComponent(diagram, light)
+      diagram = addWire(diagram, createWire(power.id, power.connections[1].id, light.id, light.connections[0].id))
+      return diagram
+    }
+
+    it('L和N线共存时应正确计算导通树', () => {
+      const { diagram, light } = buildTestDiagramWithLN()
+      const state = calculateCircuitState(diagram)
+      const lightValues = state.electricalValues.get(light.id)
+      expect(lightValues?.current).toBeGreaterThan(0)
+      expect(lightValues?.current).toBeCloseTo(0.27, 1)
+    })
+
+    it('无lineType的旧数据线应视为L兼容', () => {
+      const diagram = buildTestDiagramOldStyle()
+      const state = calculateCircuitState(diagram)
+      expect(state.totalCurrent).toBeGreaterThan(0)
+    })
+  })
+
+  describe('场景12: N-path 回路校验', () => {
+    function buildTestDiagramOnlyL() {
+      const power = createComponent('power', '电源', { x: 0, y: 0 })
+      const breaker = createComponent('circuit_breaker', '断路器', { x: 100, y: 0 })
+      const light = createComponent('light', '灯', { x: 200, y: 0 }, { power: 60 })
+
+      const pL = power.connections.find(c => c.label === 'L')!
+      const bIn = breaker.connections[0]
+      const bOut = breaker.connections[1]
+      const lL = light.connections.find(c => c.label === 'L')!
+
+      const wires: Wire[] = [
+        { id: 'w1', from: { componentId: power.id, pointId: pL.id }, to: { componentId: breaker.id, pointId: bIn.id }, lineType: 'L' },
+        { id: 'w2', from: { componentId: breaker.id, pointId: bOut.id }, to: { componentId: light.id, pointId: lL.id }, lineType: 'L' },
+      ]
+
+      return {
+        id: 'test-only-l',
+        name: 'Test Only L',
+        components: [power, breaker, light],
+        wires,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      } as CircuitDiagram
+    }
+
+    function buildTestDiagramWithLN() {
+      const power = createComponent('power', '电源', { x: 0, y: 0 })
+      const breaker = createComponent('circuit_breaker', '断路器', { x: 100, y: 0 })
+      const light = createComponent('light', '灯', { x: 200, y: 0 }, { power: 60 })
+
+      const pL = power.connections.find(c => c.label === 'L')!
+      const pN = power.connections.find(c => c.label === 'N')!
+      const bIn = breaker.connections[0]
+      const bOut = breaker.connections[1]
+      const lL = light.connections.find(c => c.label === 'L')!
+      const lN = light.connections.find(c => c.label === 'N')!
+
+      const wires: Wire[] = [
+        { id: 'w1', from: { componentId: power.id, pointId: pL.id }, to: { componentId: breaker.id, pointId: bIn.id }, lineType: 'L' },
+        { id: 'w2', from: { componentId: breaker.id, pointId: bOut.id }, to: { componentId: light.id, pointId: lL.id }, lineType: 'L' },
+        { id: 'w3', from: { componentId: light.id, pointId: lN.id }, to: { componentId: power.id, pointId: pN.id }, lineType: 'N' },
+      ]
+
+      return {
+        id: 'test-ln',
+        name: 'Test LN',
+        components: [power, breaker, light],
+        wires,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      } as CircuitDiagram
+    }
+
+    function buildTestDiagramOldStyle() {
+      let diagram = createCircuitDiagram('Old Style')
+      const power = createComponent('power', '电源', { x: 0, y: 0 })
+      const light = createComponent('light', '灯', { x: 200, y: 0 }, { power: 60 })
+      diagram = addComponent(diagram, power)
+      diagram = addComponent(diagram, light)
+      diagram = addWire(diagram, createWire(power.id, power.connections[1].id, light.id, light.connections[0].id))
+      return diagram
+    }
+
+    it('只有L线无N线时应报告neutral_open', () => {
+      const diagram = buildTestDiagramOnlyL()
+      const faults = detectFaults(diagram)
+      const neutralFault = faults.find(f => f.type === 'neutral_open')
+      expect(neutralFault).toBeDefined()
+      expect(neutralFault?.message).toContain('零线')
+    })
+
+    it('L和N线都存在时不应报告neutral_open', () => {
+      const diagram = buildTestDiagramWithLN()
+      const faults = detectFaults(diagram)
+      const neutralFault = faults.find(f => f.type === 'neutral_open')
+      expect(neutralFault).toBeUndefined()
+    })
+
+    it('旧电路(无lineType)不应报告neutral_open', () => {
+      const diagram = buildTestDiagramOldStyle()
+      const faults = detectFaults(diagram)
+      const neutralFault = faults.find(f => f.type === 'neutral_open')
+      expect(neutralFault).toBeUndefined()
     })
   })
 })

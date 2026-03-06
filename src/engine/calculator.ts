@@ -144,7 +144,7 @@ function isPositiveFiniteResistance(resistance: number): boolean {
   return Number.isFinite(resistance) && resistance > 0
 }
 
-function buildAdjacencyList(diagram: CircuitDiagram): AdjacencyList {
+function buildAdjacencyList(diagram: CircuitDiagram, lineTypes?: Set<string>): AdjacencyList {
   const adjacencyList: AdjacencyList = {}
   
   diagram.components.forEach(comp => {
@@ -152,6 +152,12 @@ function buildAdjacencyList(diagram: CircuitDiagram): AdjacencyList {
   })
   
   diagram.wires.forEach(wire => {
+    if (lineTypes) {
+      const wt = wire.lineType
+      if (wt && !lineTypes.has(wt)) return
+      if (!wt && !lineTypes.has('L')) return
+    }
+    
     const fromId = wire.from.componentId
     const toId = wire.to.componentId
     
@@ -277,7 +283,7 @@ export function calculateCircuitState(diagram: CircuitDiagram): CircuitState {
   const componentMap = new Map<string, Component>(
     diagram.components.map(component => [component.id, component])
   )
-  const adjacencyList = buildAdjacencyList(diagram)
+  const adjacencyList = buildAdjacencyList(diagram, new Set(['L']))
   const conductingTree = buildConductingTree(powerSource.id, adjacencyList, componentMap)
 
   diagram.components.forEach(component => {
@@ -421,7 +427,7 @@ export function calculateComponentValues(
   const powerSource = diagram.components.find(c => c.type === 'power')
   if (!powerSource) return null
   
-  const adjacencyList = buildAdjacencyList(diagram)
+  const adjacencyList = buildAdjacencyList(diagram, new Set(['L']))
   const path = findPath(adjacencyList, powerSource.id, componentId)
   
   if (!path) {
