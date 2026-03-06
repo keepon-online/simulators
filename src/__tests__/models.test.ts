@@ -4,6 +4,8 @@ import {
   createComponent,
   createCircuitDiagram,
   createDefaultConnections,
+  createWire,
+  inferLineType,
   addComponent,
   removeComponent,
   toggleSwitch,
@@ -210,6 +212,57 @@ describe('dual_switch toggle', () => {
     expect(d1.components[0].state.isOn2).toBe(true)
     const d2 = toggleSwitch(d1, comp.id, 2)
     expect(d2.components[0].state.isOn2).toBe(false)
+  })
+})
+
+describe('inferLineType', () => {
+  it('should return L for L label', () => {
+    expect(inferLineType('L')).toBe('L')
+  })
+  it('should return L for L1/L2 labels', () => {
+    expect(inferLineType('L1')).toBe('L')
+    expect(inferLineType('L2')).toBe('L')
+  })
+  it('should return N for N label', () => {
+    expect(inferLineType('N')).toBe('N')
+  })
+  it('should return E for E label', () => {
+    expect(inferLineType('E')).toBe('E')
+  })
+  it('should return E for PE label', () => {
+    expect(inferLineType('PE')).toBe('E')
+  })
+  it('should return undefined for no label', () => {
+    expect(inferLineType()).toBeUndefined()
+    expect(inferLineType(undefined)).toBeUndefined()
+  })
+  it('should return undefined for unknown labels', () => {
+    expect(inferLineType('X')).toBeUndefined()
+  })
+})
+
+describe('createWire lineType inference', () => {
+  it('should infer L lineType from L-labeled port', () => {
+    const power = createComponent('power', '电源', { x: 0, y: 0 })
+    const breaker = createComponent('circuit_breaker', '断路器', { x: 100, y: 0 })
+    const lPort = power.connections.find(c => c.label === 'L')!
+    const bPort = breaker.connections.find(c => c.label === 'L')!
+    const wire = createWire(power.id, lPort.id, breaker.id, bPort.id, undefined, lPort.label)
+    expect(wire.lineType).toBe('L')
+  })
+
+  it('should infer N lineType from N-labeled port', () => {
+    const light = createComponent('light', '灯', { x: 0, y: 0 })
+    const power = createComponent('power', '电源', { x: 100, y: 0 })
+    const nPortLight = light.connections.find(c => c.label === 'N')!
+    const nPortPower = power.connections.find(c => c.label === 'N')!
+    const wire = createWire(light.id, nPortLight.id, power.id, nPortPower.id, undefined, nPortLight.label)
+    expect(wire.lineType).toBe('N')
+  })
+
+  it('should leave lineType undefined when no label passed', () => {
+    const wire = createWire('c1', 'p1', 'c2', 'p2')
+    expect(wire.lineType).toBeUndefined()
   })
 })
 

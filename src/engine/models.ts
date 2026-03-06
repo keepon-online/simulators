@@ -127,13 +127,24 @@ export function createDefaultConnections(type: ComponentType): ConnectionPoint[]
   }
 }
 
+// 根据连接点标签推导线路类型
+export function inferLineType(label?: string): 'L' | 'N' | 'E' | undefined {
+  if (!label) return undefined
+  const upper = label.toUpperCase()
+  if (upper.startsWith('L')) return 'L'
+  if (upper === 'N') return 'N'
+  if (upper === 'E' || upper === 'PE') return 'E'
+  return undefined
+}
+
 // 创建导线
 export function createWire(
   fromComponentId: string,
   fromPointId: string,
   toComponentId: string,
   toPointId: string,
-  points?: { x: number; y: number }[]
+  points?: { x: number; y: number }[],
+  fromLabel?: string,
 ): Wire {
   return {
     id: generateId(),
@@ -146,6 +157,7 @@ export function createWire(
       pointId: toPointId,
     },
     points,
+    lineType: inferLineType(fromLabel),
   }
 }
 
