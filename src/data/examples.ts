@@ -40,11 +40,13 @@ function makeWire(
   fromPointId: string,
   toComponentId: string,
   toPointId: string,
+  lineType?: 'L' | 'N' | 'E',
 ): Wire {
   return {
     id,
     from: { componentId: fromComponentId, pointId: fromPointId },
     to: { componentId: toComponentId, pointId: toPointId },
+    lineType,
   }
 }
 
@@ -71,9 +73,10 @@ const ex1Components: Component[] = [
 ]
 
 const ex1Wires: Wire[] = [
-  makeWire('ex1-w1', 'ex1-power', 'ex1-power-out', 'ex1-breaker', 'ex1-breaker-in'),
-  makeWire('ex1-w2', 'ex1-breaker', 'ex1-breaker-out', 'ex1-switch', 'ex1-switch-in'),
-  makeWire('ex1-w3', 'ex1-switch', 'ex1-switch-out', 'ex1-light', 'ex1-light-in'),
+  makeWire('ex1-w1', 'ex1-power', 'ex1-power-out', 'ex1-breaker', 'ex1-breaker-in', 'L'),
+  makeWire('ex1-w2', 'ex1-breaker', 'ex1-breaker-out', 'ex1-switch', 'ex1-switch-in', 'L'),
+  makeWire('ex1-w3', 'ex1-switch', 'ex1-switch-out', 'ex1-light', 'ex1-light-in', 'L'),
+  makeWire('ex1-w4', 'ex1-light', 'ex1-light-out', 'ex1-power', 'ex1-power-in', 'N'),
 ]
 
 
@@ -101,11 +104,12 @@ const ex2Components: Component[] = [
 ]
 
 const ex2Wires: Wire[] = [
-  makeWire('ex2-w1', 'ex2-power', 'ex2-power-out', 'ex2-breaker', 'ex2-breaker-in'),
-  makeWire('ex2-w2', 'ex2-breaker', 'ex2-breaker-out', 'ex2-switch1', 'ex2-switch1-in'),
-  makeWire('ex2-w3', 'ex2-breaker', 'ex2-breaker-out', 'ex2-switch2', 'ex2-switch2-in'),
-  makeWire('ex2-w4', 'ex2-switch1', 'ex2-switch1-out', 'ex2-light', 'ex2-light-in'),
-  makeWire('ex2-w5', 'ex2-switch2', 'ex2-switch2-out', 'ex2-light', 'ex2-light-in'),
+  makeWire('ex2-w1', 'ex2-power', 'ex2-power-out', 'ex2-breaker', 'ex2-breaker-in', 'L'),
+  makeWire('ex2-w2', 'ex2-breaker', 'ex2-breaker-out', 'ex2-switch1', 'ex2-switch1-in', 'L'),
+  makeWire('ex2-w3', 'ex2-breaker', 'ex2-breaker-out', 'ex2-switch2', 'ex2-switch2-in', 'L'),
+  makeWire('ex2-w4', 'ex2-switch1', 'ex2-switch1-out', 'ex2-light', 'ex2-light-in', 'L'),
+  makeWire('ex2-w5', 'ex2-switch2', 'ex2-switch2-out', 'ex2-light', 'ex2-light-in', 'L'),
+  makeWire('ex2-w6', 'ex2-light', 'ex2-light-out', 'ex2-power', 'ex2-power-in', 'N'),
 ]
 
 // ============================================================
@@ -132,10 +136,13 @@ const ex3Components: Component[] = [
 ]
 
 const ex3Wires: Wire[] = [
-  makeWire('ex3-w1', 'ex3-power', 'ex3-power-out', 'ex3-breaker', 'ex3-breaker-in'),
-  makeWire('ex3-w2', 'ex3-breaker', 'ex3-breaker-out', 'ex3-outlet1', 'ex3-outlet1-in'),
-  makeWire('ex3-w3', 'ex3-breaker', 'ex3-breaker-out', 'ex3-outlet2', 'ex3-outlet2-in'),
-  makeWire('ex3-w4', 'ex3-breaker', 'ex3-breaker-out', 'ex3-outlet3', 'ex3-outlet3-in'),
+  makeWire('ex3-w1', 'ex3-power', 'ex3-power-out', 'ex3-breaker', 'ex3-breaker-in', 'L'),
+  makeWire('ex3-w2', 'ex3-breaker', 'ex3-breaker-out', 'ex3-outlet1', 'ex3-outlet1-in', 'L'),
+  makeWire('ex3-w3', 'ex3-breaker', 'ex3-breaker-out', 'ex3-outlet2', 'ex3-outlet2-in', 'L'),
+  makeWire('ex3-w4', 'ex3-breaker', 'ex3-breaker-out', 'ex3-outlet3', 'ex3-outlet3-in', 'L'),
+  makeWire('ex3-w5', 'ex3-outlet1', 'ex3-outlet1-out', 'ex3-power', 'ex3-power-in', 'N'),
+  makeWire('ex3-w6', 'ex3-outlet2', 'ex3-outlet2-out', 'ex3-power', 'ex3-power-in', 'N'),
+  makeWire('ex3-w7', 'ex3-outlet3', 'ex3-outlet3-out', 'ex3-power', 'ex3-power-in', 'N'),
 ]
 // ============================================================
 // 示例 4: 专线回路
@@ -156,9 +163,11 @@ const ex4Components: Component[] = [
     APPLIANCE_PARAMS.water_heater),
 ]
 const ex4Wires: Wire[] = [
-  makeWire('ex4-w1', 'ex4-power', 'ex4-power-out', 'ex4-breaker', 'ex4-breaker-in'),
-  makeWire('ex4-w2', 'ex4-breaker', 'ex4-breaker-out', 'ex4-fridge', 'ex4-fridge-in'),
-  makeWire('ex4-w3', 'ex4-breaker', 'ex4-breaker-out', 'ex4-heater', 'ex4-heater-in'),
+  makeWire('ex4-w1', 'ex4-power', 'ex4-power-out', 'ex4-breaker', 'ex4-breaker-in', 'L'),
+  makeWire('ex4-w2', 'ex4-breaker', 'ex4-breaker-out', 'ex4-fridge', 'ex4-fridge-in', 'L'),
+  makeWire('ex4-w3', 'ex4-breaker', 'ex4-breaker-out', 'ex4-heater', 'ex4-heater-in', 'L'),
+  makeWire('ex4-w4', 'ex4-fridge', 'ex4-fridge-out', 'ex4-power', 'ex4-power-in', 'N'),
+  makeWire('ex4-w5', 'ex4-heater', 'ex4-heater-out', 'ex4-power', 'ex4-power-in', 'N'),
 ]
 // ============================================================
 // 示例 5: 空调专线
@@ -176,8 +185,9 @@ const ex5Components: Component[] = [
     APPLIANCE_PARAMS.air_conditioner),
 ]
 const ex5Wires: Wire[] = [
-  makeWire('ex5-w1', 'ex5-power', 'ex5-power-out', 'ex5-breaker', 'ex5-breaker-in'),
-  makeWire('ex5-w2', 'ex5-breaker', 'ex5-breaker-out', 'ex5-ac', 'ex5-ac-in'),
+  makeWire('ex5-w1', 'ex5-power', 'ex5-power-out', 'ex5-breaker', 'ex5-breaker-in', 'L'),
+  makeWire('ex5-w2', 'ex5-breaker', 'ex5-breaker-out', 'ex5-ac', 'ex5-ac-in', 'L'),
+  makeWire('ex5-w3', 'ex5-ac', 'ex5-ac-out', 'ex5-power', 'ex5-power-in', 'N'),
 ]
 // ============================================================
 // 示例 6: 全屋配电
@@ -226,19 +236,27 @@ const ex6Components: Component[] = [
 ]
 const ex6Wires: Wire[] = [
   // 主干
-  makeWire('ex6-w1', 'ex6-power', 'ex6-power-out', 'ex6-main-breaker', 'ex6-mb-in'),
+  makeWire('ex6-w1', 'ex6-power', 'ex6-power-out', 'ex6-main-breaker', 'ex6-mb-in', 'L'),
   // 照明分支
-  makeWire('ex6-w2', 'ex6-main-breaker', 'ex6-mb-out', 'ex6-light-switch', 'ex6-ls-in'),
-  makeWire('ex6-w3', 'ex6-light-switch', 'ex6-ls-out', 'ex6-light', 'ex6-light-in'),
+  makeWire('ex6-w2', 'ex6-main-breaker', 'ex6-mb-out', 'ex6-light-switch', 'ex6-ls-in', 'L'),
+  makeWire('ex6-w3', 'ex6-light-switch', 'ex6-ls-out', 'ex6-light', 'ex6-light-in', 'L'),
   // 插座分支
-  makeWire('ex6-w4', 'ex6-main-breaker', 'ex6-mb-out', 'ex6-outlet1', 'ex6-o1-in'),
-  makeWire('ex6-w5', 'ex6-main-breaker', 'ex6-mb-out', 'ex6-outlet2', 'ex6-o2-in'),
-  makeWire('ex6-w6', 'ex6-main-breaker', 'ex6-mb-out', 'ex6-outlet3', 'ex6-o3-in'),
+  makeWire('ex6-w4', 'ex6-main-breaker', 'ex6-mb-out', 'ex6-outlet1', 'ex6-o1-in', 'L'),
+  makeWire('ex6-w5', 'ex6-main-breaker', 'ex6-mb-out', 'ex6-outlet2', 'ex6-o2-in', 'L'),
+  makeWire('ex6-w6', 'ex6-main-breaker', 'ex6-mb-out', 'ex6-outlet3', 'ex6-o3-in', 'L'),
   // 空调分支
-  makeWire('ex6-w7', 'ex6-main-breaker', 'ex6-mb-out', 'ex6-ac', 'ex6-ac-in'),
+  makeWire('ex6-w7', 'ex6-main-breaker', 'ex6-mb-out', 'ex6-ac', 'ex6-ac-in', 'L'),
   // 厨房分支
-  makeWire('ex6-w8', 'ex6-main-breaker', 'ex6-mb-out', 'ex6-fridge', 'ex6-fridge-in'),
-  makeWire('ex6-w9', 'ex6-main-breaker', 'ex6-mb-out', 'ex6-heater', 'ex6-heater-in'),
+  makeWire('ex6-w8', 'ex6-main-breaker', 'ex6-mb-out', 'ex6-fridge', 'ex6-fridge-in', 'L'),
+  makeWire('ex6-w9', 'ex6-main-breaker', 'ex6-mb-out', 'ex6-heater', 'ex6-heater-in', 'L'),
+  // 零线回路
+  makeWire('ex6-w10', 'ex6-light', 'ex6-light-out', 'ex6-power', 'ex6-power-in', 'N'),
+  makeWire('ex6-w11', 'ex6-outlet1', 'ex6-o1-out', 'ex6-power', 'ex6-power-in', 'N'),
+  makeWire('ex6-w12', 'ex6-outlet2', 'ex6-o2-out', 'ex6-power', 'ex6-power-in', 'N'),
+  makeWire('ex6-w13', 'ex6-outlet3', 'ex6-o3-out', 'ex6-power', 'ex6-power-in', 'N'),
+  makeWire('ex6-w14', 'ex6-ac', 'ex6-ac-out', 'ex6-power', 'ex6-power-in', 'N'),
+  makeWire('ex6-w15', 'ex6-fridge', 'ex6-fridge-out', 'ex6-power', 'ex6-power-in', 'N'),
+  makeWire('ex6-w16', 'ex6-heater', 'ex6-heater-out', 'ex6-power', 'ex6-power-in', 'N'),
 ]
 
 // ============================================================
@@ -259,8 +277,9 @@ const ex7Components: Component[] = [
 ]
 
 const ex7Wires: Wire[] = [
-  makeWire('ex7-w1', 'ex7-power', 'ex7-power-out', 'ex7-breaker', 'ex7-breaker-in'),
-  makeWire('ex7-w2', 'ex7-breaker', 'ex7-breaker-out', 'ex7-outlet', 'ex7-outlet-L'),
+  makeWire('ex7-w1', 'ex7-power', 'ex7-power-out', 'ex7-breaker', 'ex7-breaker-in', 'L'),
+  makeWire('ex7-w2', 'ex7-breaker', 'ex7-breaker-out', 'ex7-outlet', 'ex7-outlet-L', 'L'),
+  makeWire('ex7-w3', 'ex7-outlet', 'ex7-outlet-N', 'ex7-power', 'ex7-power-in', 'N'),
 ]
 
 // ============================================================
@@ -287,11 +306,62 @@ const ex8Components: Component[] = [
 ]
 
 const ex8Wires: Wire[] = [
-  makeWire('ex8-w1', 'ex8-power', 'ex8-power-out', 'ex8-breaker', 'ex8-breaker-in'),
-  makeWire('ex8-w2', 'ex8-breaker', 'ex8-breaker-out', 'ex8-dual-sw', 'ex8-dsw-L1in'),
-  makeWire('ex8-w3', 'ex8-breaker', 'ex8-breaker-out', 'ex8-dual-sw', 'ex8-dsw-L2in'),
-  makeWire('ex8-w4', 'ex8-dual-sw', 'ex8-dsw-L1out', 'ex8-light1', 'ex8-light1-in'),
-  makeWire('ex8-w5', 'ex8-dual-sw', 'ex8-dsw-L2out', 'ex8-light2', 'ex8-light2-in'),
+  makeWire('ex8-w1', 'ex8-power', 'ex8-power-out', 'ex8-breaker', 'ex8-breaker-in', 'L'),
+  makeWire('ex8-w2', 'ex8-breaker', 'ex8-breaker-out', 'ex8-dual-sw', 'ex8-dsw-L1in', 'L'),
+  makeWire('ex8-w3', 'ex8-breaker', 'ex8-breaker-out', 'ex8-dual-sw', 'ex8-dsw-L2in', 'L'),
+  makeWire('ex8-w4', 'ex8-dual-sw', 'ex8-dsw-L1out', 'ex8-light1', 'ex8-light1-in', 'L'),
+  makeWire('ex8-w5', 'ex8-dual-sw', 'ex8-dsw-L2out', 'ex8-light2', 'ex8-light2-in', 'L'),
+  makeWire('ex8-w6', 'ex8-light1', 'ex8-light1-out', 'ex8-power', 'ex8-power-in', 'N'),
+  makeWire('ex8-w7', 'ex8-light2', 'ex8-light2-out', 'ex8-power', 'ex8-power-in', 'N'),
+]
+
+// ============================================================
+// 示例 9: 保险丝保护回路
+// 电源 → 保险丝 → 灯
+// ============================================================
+
+const ex9Components: Component[] = [
+  makeComponent('ex9-power', 'power', '电源', { x: 100, y: 300 },
+    [cp('ex9-power-in', 0, 20, 'N'), cp('ex9-power-out', 60, 20, 'L')],
+    BASIC_COMPONENT_PARAMS.power),
+  makeComponent('ex9-fuse', 'fuse', '保险丝', { x: 350, y: 300 },
+    [cp('ex9-fuse-in', 0, 15, 'L'), cp('ex9-fuse-out', 50, 15, 'L')],
+    BASIC_COMPONENT_PARAMS.fuse),
+  makeComponent('ex9-light', 'light', '灯具', { x: 600, y: 300 },
+    [cp('ex9-light-in', 0, 20, 'L'), cp('ex9-light-out', 50, 20, 'N')],
+    BASIC_COMPONENT_PARAMS.light),
+]
+const ex9Wires: Wire[] = [
+  makeWire('ex9-w1', 'ex9-power', 'ex9-power-out', 'ex9-fuse', 'ex9-fuse-in', 'L'),
+  makeWire('ex9-w2', 'ex9-fuse', 'ex9-fuse-out', 'ex9-light', 'ex9-light-in', 'L'),
+  makeWire('ex9-w3', 'ex9-light', 'ex9-light-out', 'ex9-power', 'ex9-power-in', 'N'),
+]
+
+// ============================================================
+// 示例 10: 家电混合回路
+// 电源 → 断路器 → 电视 + 洗衣机并联
+// ============================================================
+
+const ex10Components: Component[] = [
+  makeComponent('ex10-power', 'power', '电源', { x: 100, y: 300 },
+    [cp('ex10-power-in', 0, 20, 'N'), cp('ex10-power-out', 60, 20, 'L')],
+    BASIC_COMPONENT_PARAMS.power),
+  makeComponent('ex10-breaker', 'circuit_breaker', '断路器', { x: 300, y: 300 },
+    [cp('ex10-breaker-in', 0, 15, 'L'), cp('ex10-breaker-out', 50, 15, 'L')],
+    BASIC_COMPONENT_PARAMS.circuit_breaker),
+  makeComponent('ex10-tv', 'tv', '电视', { x: 550, y: 180 },
+    [cp('ex10-tv-in', 0, 25, 'L'), cp('ex10-tv-out', 60, 25, 'N')],
+    APPLIANCE_PARAMS.tv),
+  makeComponent('ex10-washer', 'washer', '洗衣机', { x: 550, y: 420 },
+    [cp('ex10-washer-in', 0, 25, 'L'), cp('ex10-washer-out', 60, 25, 'N')],
+    APPLIANCE_PARAMS.washer),
+]
+const ex10Wires: Wire[] = [
+  makeWire('ex10-w1', 'ex10-power', 'ex10-power-out', 'ex10-breaker', 'ex10-breaker-in', 'L'),
+  makeWire('ex10-w2', 'ex10-breaker', 'ex10-breaker-out', 'ex10-tv', 'ex10-tv-in', 'L'),
+  makeWire('ex10-w3', 'ex10-breaker', 'ex10-breaker-out', 'ex10-washer', 'ex10-washer-in', 'L'),
+  makeWire('ex10-w4', 'ex10-tv', 'ex10-tv-out', 'ex10-power', 'ex10-power-in', 'N'),
+  makeWire('ex10-w5', 'ex10-washer', 'ex10-washer-out', 'ex10-power', 'ex10-power-in', 'N'),
 ]
 
 // ============================================================
@@ -310,6 +380,8 @@ export const acDedicatedLine = makeDiagram('ex5', '空调专线', ex5Components,
 export const wholeHouseDistribution = makeDiagram('ex6', '全屋配电', ex6Components, ex6Wires)
 export const fiveHoleOutletWiring = makeDiagram('ex7', '五孔插座接线', ex7Components, ex7Wires)
 export const dualSwitchWiring = makeDiagram('ex8', '双联双控接线', ex8Components, ex8Wires)
+export const fuseProtection = makeDiagram('ex9', '保险丝保护', ex9Components, ex9Wires)
+export const applianceMixed = makeDiagram('ex10', '家电混合回路', ex10Components, ex10Wires)
 
 export const CIRCUIT_EXAMPLES: Array<CircuitExampleWithSteps> = [
   {
@@ -319,9 +391,9 @@ export const CIRCUIT_EXAMPLES: Array<CircuitExampleWithSteps> = [
     teachingLabel: '基础照明回路',
     teachingTag: '入门',
     steps: [
-      { step: 1, description: '连接火线主干：电源(L) → 断路器(L) → 开关(L)。' },
-      { step: 2, description: '连接负载线：开关输出端(L) → 灯具输入端(L)。' },
-      { step: 3, description: '连接零线回路：灯具零线端(N) → 电源零线端(N)。' },
+      { step: 1, description: '连接火线(L)主干：电源(L) → 断路器(L) → 开关(L)。' },
+      { step: 2, description: '连接负载火线：开关输出端(L) → 灯具输入端(L)。' },
+      { step: 3, description: '连接零线(N)回路：灯具零线端(N) → 电源零线端(N)。' },
     ],
   },
   {
@@ -334,7 +406,7 @@ export const CIRCUIT_EXAMPLES: Array<CircuitExampleWithSteps> = [
       { step: 1, description: '先接火线主干：电源(L) → 断路器(L)。' },
       { step: 2, description: '将断路器输出并联分到两个开关输入端。' },
       { step: 3, description: '把两个开关输出分别并到同一灯具火线端(L)。' },
-      { step: 4, description: '补齐零线：灯具零线端(N) → 电源零线端(N)。' },
+      { step: 4, description: '补齐零线(N)回路：灯具(N) → 电源(N)。' },
     ],
   },
   {
@@ -347,7 +419,7 @@ export const CIRCUIT_EXAMPLES: Array<CircuitExampleWithSteps> = [
       { step: 1, description: '连接电源到断路器：电源(L) → 断路器(L)。' },
       { step: 2, description: '从断路器输出并联分支到插座1火线端。' },
       { step: 3, description: '继续并联分支到插座2与插座3火线端。' },
-      { step: 4, description: '检查各插座零线端已形成回路到电源零线端(N)。' },
+      { step: 4, description: '连接零线(N)回路：各插座(N) → 电源(N)。' },
     ],
   },
   {
@@ -360,7 +432,7 @@ export const CIRCUIT_EXAMPLES: Array<CircuitExampleWithSteps> = [
       { step: 1, description: '连接火线主干：电源(L) → 厨房断路器(L)。' },
       { step: 2, description: '断路器输出第一支路接到冰箱输入端(L)。' },
       { step: 3, description: '断路器输出第二支路接到热水器输入端(L)。' },
-      { step: 4, description: '确认两台电器零线端(N)都回到电源零线侧。' },
+      { step: 4, description: '连接零线(N)回路：冰箱(N)、热水器(N) → 电源(N)。' },
     ],
   },
   {
@@ -372,7 +444,7 @@ export const CIRCUIT_EXAMPLES: Array<CircuitExampleWithSteps> = [
     steps: [
       { step: 1, description: '连接电源火线到 25A 断路器输入端。' },
       { step: 2, description: '连接断路器输出到空调火线输入端(L)。' },
-      { step: 3, description: '连接空调零线端(N)回到电源零线端。' },
+      { step: 3, description: '连接零线(N)回路：空调(N) → 电源(N)。' },
     ],
   },
   {
@@ -386,7 +458,7 @@ export const CIRCUIT_EXAMPLES: Array<CircuitExampleWithSteps> = [
       { step: 2, description: '从总断路器输出分出照明支路：开关 → 客厅灯。' },
       { step: 3, description: '从总断路器输出分出插座支路：插座1、2、3并联。' },
       { step: 4, description: '从总断路器输出分出空调与厨房支路：空调、冰箱、热水器。' },
-      { step: 5, description: '统一核对各支路零线回路连续且无遗漏。' },
+      { step: 5, description: '连接所有负载零线(N)回路至电源(N)端。' },
     ],
   },
   {
@@ -396,10 +468,9 @@ export const CIRCUIT_EXAMPLES: Array<CircuitExampleWithSteps> = [
     teachingLabel: '插座端子识别',
     teachingTag: '规范',
     steps: [
-      { step: 1, description: '连接火线：电源(L) → 断路器(L) → 五孔插座 L 端。' },
-      { step: 2, description: '连接零线：电源(N) 应接至五孔插座 N 端。' },
-      { step: 3, description: '连接地线：五孔插座 E 端应接地线端子。' },
-      { step: 4, description: '教学提示：本示例导线仅显式展示火线连接路径。' },
+      { step: 1, description: '连接火线(L)：电源(L) → 断路器(L) → 五孔插座 L 端。' },
+      { step: 2, description: '连接零线(N)：五孔插座 N 端 → 电源(N)。' },
+      { step: 3, description: '地线(E)：五孔插座 E 端应接地线端子（本示例未显示地线连接）。' },
     ],
   },
   {
@@ -412,7 +483,31 @@ export const CIRCUIT_EXAMPLES: Array<CircuitExampleWithSteps> = [
       { step: 1, description: '连接火线主干：电源(L) → 断路器(L)。' },
       { step: 2, description: '从断路器输出分别接到双联开关 L1/L2 输入端。' },
       { step: 3, description: '双联开关 L1 输出接灯1火线端，L2 输出接灯2火线端。' },
-      { step: 4, description: '分别补齐灯1、灯2零线端(N)回到电源零线端。' },
+      { step: 4, description: '连接零线(N)回路：灯1(N)、灯2(N) → 电源(N)。' },
+    ],
+  },
+  {
+    name: '保险丝保护',
+    description: '保险丝保护回路：电源 → 保险丝 → 灯具',
+    diagram: fuseProtection,
+    teachingLabel: '保险丝保护',
+    teachingTag: '入门',
+    steps: [
+      { step: 1, description: '连接火线(L)：电源(L) → 保险丝(L)。' },
+      { step: 2, description: '保险丝输出接灯具火线端(L)。' },
+      { step: 3, description: '连接零线(N)回路：灯具(N) → 电源(N)。' },
+    ],
+  },
+  {
+    name: '家电混合回路',
+    description: '家电并联回路：断路器保护下的电视与洗衣机并联',
+    diagram: applianceMixed,
+    teachingLabel: '家电并联回路',
+    teachingTag: '入门',
+    steps: [
+      { step: 1, description: '连接火线(L)主干：电源(L) → 断路器(L)。' },
+      { step: 2, description: '断路器输出并联到电视(L)和洗衣机(L)。' },
+      { step: 3, description: '连接零线(N)回路：电视(N)、洗衣机(N) → 电源(N)。' },
     ],
   },
 ]
