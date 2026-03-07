@@ -51,4 +51,13 @@ describe('CircuitCanvas 接线步骤浮层实现', () => {
     expect(source).toContain("case 'outlet'")
     expect(source).toContain("case 'outlet_5hole'")
   })
+
+  it('包含核心元器件辅助渲染 helper 调用', () => {
+    expect(source).toContain('renderPowerPanel(')
+    expect(source).toContain('renderWallSwitch(')
+    expect(source).toContain('renderBreakerPanel(')
+    expect(source).toContain('renderCeilingLight(')
+    expect(source).toContain('renderTwoHoleOutlet(')
+    expect(source).toContain('renderFiveHoleOutletPanel(')
+  })
 })

@@ -124,6 +124,176 @@ function renderApplianceIcon(type: ComponentType, x: number, y: number) {
   }
 }
 
+function renderPowerPanel(
+  component: Component,
+  _color: string,
+  commonProps: { style: React.CSSProperties },
+  selectionStroke: string,
+  selectionStrokeWidth: number
+) {
+  const { position, name } = component
+  const x = position.x
+  const y = position.y
+  const w = 60
+  const h = 40
+
+  return (
+    <g key={component.id} {...commonProps}>
+      {/* 壳体：浅灰/米白 */}
+      <rect x={x} y={y} width={w} height={h} fill="#e8e6e3" rx={4} stroke="#c4c0b8" strokeWidth={1} />
+      <rect x={x} y={y} width={w} height={h} rx={4} stroke={selectionStroke} strokeWidth={selectionStrokeWidth} fill="none" />
+      {/* 顶部进线识别区 */}
+      <rect x={x + 4} y={y + 4} width={w - 8} height={12} rx={2} fill="#d4d0c8" />
+      <text x={x + w / 2} y={y + 13} textAnchor="middle" fill="#5c5a57" fontSize={8}>进线</text>
+      {/* 名称 */}
+      <text x={x + w / 2} y={y + h - 10} textAnchor="middle" fill="#374151" fontSize={10}>⚡ {name}</text>
+    </g>
+  )
+}
+
+function renderWallSwitch(
+  component: Component,
+  _color: string,
+  commonProps: { style: React.CSSProperties },
+  selectionStroke: string,
+  selectionStrokeWidth: number
+) {
+  const { position, state, name } = component
+  const x = position.x
+  const y = position.y
+  const isOn = state.isOn
+  const w = 50
+  const h = 30
+
+  return (
+    <g key={component.id} {...commonProps}>
+      {/* 86 型外框：浅色面板 + 边框 */}
+      <rect x={x} y={y} width={w} height={h} fill="#f5f3f0" rx={4} stroke="#b8b4ac" strokeWidth={1.5} />
+      <rect x={x} y={y} width={w} height={h} rx={4} stroke={selectionStroke} strokeWidth={selectionStrokeWidth} fill="none" />
+      {/* 中央大按键：开=下压(亮)，关=凸起(暗) */}
+      <rect
+        x={x + 8}
+        y={y + (isOn ? 10 : 6)}
+        width={w - 16}
+        height={h - (isOn ? 14 : 16)}
+        rx={4}
+        fill={isOn ? '#d4d0c8' : '#e8e4e0'}
+        stroke={isOn ? '#a8a49c' : '#c8c4bc'}
+        strokeWidth={1}
+      />
+      <text x={x + w / 2} y={y + h + 12} textAnchor="middle" fill={COMPONENT_LABEL_COLOR} fontSize={COMPONENT_LABEL_FONT_SIZE}>{name}</text>
+    </g>
+  )
+}
+
+function renderBreakerPanel(
+  component: Component,
+  _color: string,
+  commonProps: { style: React.CSSProperties },
+  selectionStroke: string,
+  selectionStrokeWidth: number
+) {
+  const { position, state, name } = component
+  const x = position.x
+  const y = position.y
+  const isTripped = state.tripped
+  const w = 50
+  const h = 30
+
+  return (
+    <g key={component.id} {...commonProps}>
+      {/* 空开壳体：正常蓝灰，跳闸红 */}
+      <rect x={x} y={y} width={w} height={h} fill={isTripped ? '#dc2626' : '#94a3b8'} rx={3} stroke={isTripped ? '#b91c1c' : '#64748b'} strokeWidth={1} />
+      <rect x={x} y={y} width={w} height={h} rx={3} stroke={selectionStroke} strokeWidth={selectionStrokeWidth} fill="none" />
+      {/* 拨杆区域：跳闸时偏下/红 */}
+      <rect x={x + 12} y={y + (isTripped ? 14 : 6)} width={26} height={10} rx={2} fill={isTripped ? '#fef2f2' : '#e2e8f0'} stroke={isTripped ? '#b91c1c' : '#94a3b8'} strokeWidth={1} />
+      <text x={x + w / 2} y={y + h + 15} textAnchor="middle" fill={COMPONENT_LABEL_COLOR} fontSize={COMPONENT_LABEL_FONT_SIZE}>{name}</text>
+    </g>
+  )
+}
+
+function renderCeilingLight(
+  component: Component,
+  commonProps: { style: React.CSSProperties },
+  selectionStroke: string,
+  selectionStrokeWidth: number,
+  values?: { current: number; power: number }
+) {
+  const { position, state, name } = component
+  const x = position.x
+  const y = position.y
+  const isLit = state.isOn && values && values.current > 0
+
+  return (
+    <g key={component.id} {...commonProps}>
+      {/* 吊杆 */}
+      <path d={`M${x + 25} ${y - 10} L${x + 10} ${y} M${x + 25} ${y - 10} L${x + 40} ${y}`} stroke="#a8a29e" strokeWidth={2} fill="none" />
+      {/* 灯罩：圆润吸顶灯，未通电灰白，通电柔和发光 */}
+      <ellipse cx={x + 25} cy={y + 18} rx={18} ry={14} fill={isLit ? '#fef9c3' : '#e7e5e4'} stroke={isLit ? '#fde047' : '#a8a29e'} strokeWidth={1} />
+      {isLit && <ellipse cx={x + 25} cy={y + 16} rx={10} ry={6} fill="#fef08a" opacity={0.6} />}
+      {/* 选中框沿用元件外框 */}
+      <path d={`M${x + 10} ${y + 40} L${x + 10} ${y} L${x + 40} ${y} L${x + 40} ${y + 40} Z`} fill="none" stroke={selectionStroke} strokeWidth={selectionStrokeWidth} />
+      <text x={x + 25} y={y + 52} textAnchor="middle" fill={COMPONENT_LABEL_COLOR} fontSize={COMPONENT_LABEL_FONT_SIZE}>{name}</text>
+    </g>
+  )
+}
+
+function renderTwoHoleOutlet(
+  component: Component,
+  _color: string,
+  commonProps: { style: React.CSSProperties },
+  selectionStroke: string,
+  selectionStrokeWidth: number
+) {
+  const { position, name } = component
+  const x = position.x
+  const y = position.y
+  const w = 50
+  const h = 30
+
+  return (
+    <g key={component.id} {...commonProps}>
+      {/* 墙插面板外框 */}
+      <rect x={x} y={y} width={w} height={h} fill="#f5f3f0" rx={4} stroke="#b8b4ac" strokeWidth={1} />
+      <rect x={x} y={y} width={w} height={h} rx={4} stroke={selectionStroke} strokeWidth={selectionStrokeWidth} fill="none" />
+      {/* 两孔：更接近真实插孔比例（竖槽+圆） */}
+      <rect x={x + 12} y={y + 8} width={6} height={12} rx={1} fill="#1f2937" />
+      <rect x={x + 32} y={y + 8} width={6} height={12} rx={1} fill="#1f2937" />
+      <text x={x + w / 2} y={y + h + 15} textAnchor="middle" fill={COMPONENT_LABEL_COLOR} fontSize={COMPONENT_LABEL_FONT_SIZE}>{name}</text>
+    </g>
+  )
+}
+
+function renderFiveHoleOutletPanel(
+  component: Component,
+  _color: string,
+  commonProps: { style: React.CSSProperties },
+  selectionStroke: string,
+  selectionStrokeWidth: number
+) {
+  const { position, name } = component
+  const x = position.x
+  const y = position.y
+  const w = 50
+  const h = 40
+
+  return (
+    <g key={component.id} {...commonProps}>
+      {/* 五孔面板外框 */}
+      <rect x={x} y={y} width={w} height={h} fill="#f5f3f0" rx={4} stroke="#b8b4ac" strokeWidth={1} />
+      <rect x={x} y={y} width={w} height={h} rx={4} stroke={selectionStroke} strokeWidth={selectionStrokeWidth} fill="none" />
+      {/* 上三孔：地线圆孔 + 左右两竖槽 */}
+      <circle cx={x + w / 2} cy={y + 10} r={3} fill="#1f2937" />
+      <rect x={x + 10} y={y + 4} width={5} height={10} rx={1} fill="#1f2937" />
+      <rect x={x + 35} y={y + 4} width={5} height={10} rx={1} fill="#1f2937" />
+      {/* 下两孔：两竖槽 */}
+      <rect x={x + 14} y={y + 24} width={5} height={12} rx={1} fill="#1f2937" />
+      <rect x={x + 31} y={y + 24} width={5} height={12} rx={1} fill="#1f2937" />
+      <text x={x + w / 2} y={y + h + 15} textAnchor="middle" fill={COMPONENT_LABEL_COLOR} fontSize={COMPONENT_LABEL_FONT_SIZE}>{name}</text>
+    </g>
+  )
+}
+
 // 渲染单个元件
 function renderComponent(component: Component, isSelected: boolean, values?: { current: number; power: number }) {
   const { type, position, state, name } = component
@@ -140,23 +310,10 @@ function renderComponent(component: Component, isSelected: boolean, values?: { c
   
   switch (type) {
     case 'power':
-      return (
-        <g key={component.id} {...commonProps}>
-          <rect x={x} y={y} width={60} height={40} fill={color} rx={4} stroke={selectionStroke} strokeWidth={selectionStrokeWidth} />
-          <text x={x + 30} y={y + 25} textAnchor="middle" fill="white" fontSize={10}>⚡ {name}</text>
-        </g>
-      )
+      return renderPowerPanel(component, color, commonProps, selectionStroke, selectionStrokeWidth)
       
     case 'switch': {
-      const isOn = state.isOn
-      return (
-        <g key={component.id} {...commonProps}>
-          <rect x={x} y={y} width={50} height={30} fill={color} rx={4} stroke={selectionStroke} strokeWidth={selectionStrokeWidth} />
-          <line x1={x + 10} y1={y + 15} x2={x + 25} y2={y + 15} stroke="white" strokeWidth={2} />
-          <line x1={x + 25} y1={y + 15} x2={x + 40} y2={isOn ? y + 25 : y + 5} stroke="white" strokeWidth={2} />
-          <text x={x + 25} y={y + 42} textAnchor="middle" fill={COMPONENT_LABEL_COLOR} fontSize={COMPONENT_LABEL_FONT_SIZE}>{name}</text>
-        </g>
-      )
+      return renderWallSwitch(component, color, commonProps, selectionStroke, selectionStrokeWidth)
     }
       
     case 'dual_switch': {
@@ -178,48 +335,16 @@ function renderComponent(component: Component, isSelected: boolean, values?: { c
       )
     }
     case 'light': {
-      const isLit = state.isOn && values && values.current > 0
-      return (
-        <g key={component.id} {...commonProps}>
-          <path d={`M${x + 10} ${y + 40} L${x + 10} ${y} L${x + 40} ${y} L${x + 40} ${y + 40} Z`} fill={isLit ? '#fef08a' : '#374151'} stroke={selectionStroke} strokeWidth={selectionStrokeWidth} />
-          <path d={`M${x + 25} ${y - 10} L${x + 10} ${y} M${x + 25} ${y - 10} L${x + 40} ${y}`} stroke="#f59e0b" strokeWidth={2} fill="none" />
-          <text x={x + 25} y={y + 50} textAnchor="middle" fill={COMPONENT_LABEL_COLOR} fontSize={COMPONENT_LABEL_FONT_SIZE}>{name}</text>
-        </g>
-      )
+      return renderCeilingLight(component, commonProps, selectionStroke, selectionStrokeWidth, values)
     }
       
     case 'outlet':
-      return (
-        <g key={component.id} {...commonProps}>
-          <rect x={x} y={y} width={50} height={30} fill={color} rx={4} stroke={selectionStroke} strokeWidth={selectionStrokeWidth} />
-          <circle cx={x + 15} cy={y + 15} r={4} fill="white" />
-          <circle cx={x + 35}cy={y + 15} r={4} fill="white" />
-          <text x={x + 25} y={y + 45} textAnchor="middle" fill={COMPONENT_LABEL_COLOR} fontSize={COMPONENT_LABEL_FONT_SIZE}>{name}</text>
-        </g>
-      )
+      return renderTwoHoleOutlet(component, color, commonProps, selectionStroke, selectionStrokeWidth)
       
     case 'outlet_5hole':
-      return (
-        <g key={component.id} {...commonProps}>
-          <rect x={x} y={y} width={50} height={40} fill={color} rx={4} stroke={selectionStroke} strokeWidth={selectionStrokeWidth} />
-          {/* 三孔：上方一个圆（E/地线） */}
-          <circle cx={x + 25} cy={y + 12} r={3} fill="white" />
-          {/* 两孔：下方两个竖线（L/N） */}
-          <line x1={x + 15} y1={y + 24} x2={x + 15} y2={y + 32} stroke="white" strokeWidth={2} />
-          <line x1={x + 35} y1={y + 24} x2={x + 35} y2={y + 32} stroke="white" strokeWidth={2} />
-          <text x={x + 25} y={y + 55} textAnchor="middle" fill={COMPONENT_LABEL_COLOR} fontSize={COMPONENT_LABEL_FONT_SIZE}>{name}</text>
-        </g>
-      )
+      return renderFiveHoleOutletPanel(component, color, commonProps, selectionStroke, selectionStrokeWidth)
     case 'circuit_breaker': {
-      const isTripped = state.tripped
-      return (
-        <g key={component.id} {...commonProps}>
-          <rect x={x} y={y} width={50} height={30} fill={isTripped ? '#dc2626' : color} rx={4} stroke={selectionStroke} strokeWidth={selectionStrokeWidth} />
-          <rect x={x + 15} y={y + 8} width={20} height={14} fill="white" rx={2} />
-          <text x={x + 25} y={y + 20} textAnchor="middle" fill="black" fontSize={10}>{state.tripped ? '⚡' : ''}</text>
-          <text x={x + 25} y={y + 45} textAnchor="middle" fill={COMPONENT_LABEL_COLOR} fontSize={COMPONENT_LABEL_FONT_SIZE}>{name}</text>
-        </g>
-      )
+      return renderBreakerPanel(component, color, commonProps, selectionStroke, selectionStrokeWidth)
     }
       
     case 'fuse': {
